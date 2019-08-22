@@ -17,6 +17,13 @@ class User implements Serializable {
     boolean accountExpired
     boolean accountLocked
     boolean passwordExpired
+    
+    //------------------------
+    
+    String apellido
+    String nombre
+    
+    
 
     Set<Authority> getAuthorities() {
         (UserAuthority.findAllByUser(this) as List<UserAuthority>)*.authority as Set<Authority>
@@ -25,6 +32,7 @@ class User implements Serializable {
     static constraints = {
         password nullable: false, blank: false, password: true
         username nullable: false, blank: false, unique: true
+        
     }
 
     static mapping = {
