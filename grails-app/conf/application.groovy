@@ -14,6 +14,7 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 
 
 // Added by the Spring Security Core plugin:
+grails.plugin.springsecurity.active = true 
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'com.smr.security.User'
 grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.smr.security.UserAuthority'
 grails.plugin.springsecurity.authority.className = 'com.smr.security.Authority'
@@ -41,7 +42,7 @@ grails.plugin.springsecurity.filterChain.chainMap = [
 ]
 
 grails.plugin.springsecurity.rest.logout.endpointUrl = '/api/logout'
-grails.plugin.springsecurity.rest.token.validation.useBearerToken = false
+grails.plugin.springsecurity.rest.token.validation.useBearerToken = true
 grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'
 grails.plugin.springsecurity.rest.token.storage.memcached.hosts = 'localhost:11211'
 grails.plugin.springsecurity.rest.token.storage.memcached.username = ''
