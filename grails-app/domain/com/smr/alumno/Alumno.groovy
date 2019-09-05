@@ -5,7 +5,7 @@ import grails.rest.*
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured("hasAnyRole('ROLE_USER','ROLE_PROFESIONAL')")
-@Resource(uri='/alumnos',formats=['json', 'xml'])
+@Resource(uri='/api/alumnos',formats=['json', 'xml'])
 class Alumno {
     String apellido
     String nombre
