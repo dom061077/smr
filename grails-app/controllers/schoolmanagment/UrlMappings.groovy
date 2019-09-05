@@ -14,6 +14,10 @@ class UrlMappings {
         "500"(view: '/error')
         "404"(view: '/notFound')
         
+        //----------usuario-------
+        
+        get "/api/user" (controller:"user",action:"show")
+        
         
     }
 }
