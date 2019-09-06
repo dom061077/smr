@@ -1,0 +1,15 @@
+
+import com.smr.security.User
+
+model{
+    User user
+}
+
+//json g.render(user)
+json{
+    id          user?.id
+    apellido    user?.apellido
+    nombre      user?.nombre
+
+}
+

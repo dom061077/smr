@@ -5,7 +5,7 @@ grails.plugin.springsecurity.securityConfigType = "Annotation"
 
 
 // Added by the Spring Security Core plugin:
-grails.plugin.springsecurity.active = false  
+grails.plugin.springsecurity.active = true  
 //grails.plugin.springsecurity.rest.token.storage.jwt.secret = 'qrD6h8K6S9503Q06Y6Rfk21TErImPYqa'
 grails.plugin.springsecurity.rest.token.validation.useBearerToken = true
 //grails.plugin.springsecurity.rest.token.validation.headerName = 'X-Auth-Token'

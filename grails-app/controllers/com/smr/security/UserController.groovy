@@ -12,11 +12,13 @@ import com.smr.security.User
 class UserController {
 	static responseFormats = ['json', 'xml']
 	
-    def mostrar(){
-        log.info("PROBANDO getUserInformation: ")
-        User user = new User()
-        log.info("PROBANDO CONTROLLER USER")
+    def getUserInformation(String userName){
+        log.info("Parametros userName: "+userName)
         
-        [user:user]
+        User usuario = User.findByUsername(userName)
+        
+         
+        [user:usuario]
     }
 }
+ 
