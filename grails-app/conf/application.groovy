@@ -1,8 +1,14 @@
 
 // Added by the Spring Security Core plugin:
-
+/**/
 grails.plugin.springsecurity.securityConfigType = "Annotation"
 
+/**
+ * PARA QUE FUNCIONE LA CONEXION A MYSQL AL GENERAR EL WAR GENERAR EL MISMO
+ * CON EL SIGUIENTE COMANDO>
+ * grails dev war
+ * 
+ * */
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.active = true  
@@ -37,7 +43,7 @@ grails.plugin.springsecurity.filterChain.chainMap = [
     [pattern: '/**/favicon.ico', filters: 'none'],
     
     [
-        pattern: '/api/**',
+        pattern: '/smr/api/**',
         filters: 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'
     ],
     [pattern: '/**',             filters: 'JOINED_FILTERS']

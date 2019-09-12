@@ -82,16 +82,19 @@ hibernate:
 dataSource:
         driverClassName: com.mysql.jdbc.Driver
         dbCreate: create-drop
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         url: jdbc:mysql://localhost/smr?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
         username: root
         password: exito
 
 environments:
     development:
+        server:
+            contextPath: '/smr'
         dataSource:
             dbCreate: create-drop
         grails:
-            serverURL: http://134.14.1.3            
+            serverURL: http://134.14.1.3:8080/smr            
             
     test:
         dataSource:
@@ -100,7 +103,6 @@ environments:
     production:
         dataSource:
             dbCreate: none
-            url: jdbc:h2:./prodDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
             properties:
                 jmxEnabled: true
                 initialSize: 5
