@@ -18,6 +18,7 @@ class UrlMappings {
         
         get "/api/showuser" (controller:"user",action:"getUserInformation")
         put "/api/changepassword" (controller:"user",action:"changePassword")
+        post "/api/validateoldpassword" (controller:"user",action:"oldPasswordValidation")
         
     }
 }

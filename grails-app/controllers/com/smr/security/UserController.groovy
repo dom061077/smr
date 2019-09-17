@@ -5,6 +5,8 @@ import grails.rest.*
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import static org.springframework.http.HttpStatus.*
+import grails.web.JSONBuilder
+
 
 import org.springframework.beans.factory.annotation.Autowired
 import com.smr.security.User
@@ -15,6 +17,7 @@ class UserController {
 	static responseFormats = ['json', 'xml']
     
     def springSecurityService
+    def passwordEncoder
 	
     def getUserInformation(String userName){
         log.info("Parametros userName: "+userName)
@@ -25,32 +28,48 @@ class UserController {
         [user:usuario]
     }
     
+    
+    
+    def oldPasswordValidation(){
+        log.info("oldPasswordValidation, parametros: "+request.JSON)
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        boolean passwordValida = false
+        def user = User.findByUsername(request.JSON.username)
+        if(passwordEncoder.isPasswordValid(user?.password,request.JSON.oldPassword,null))
+            passwordValida = true
+        def json = jsonBuilder.build{
+            success = passwordValida
+        }
+        render(status: 200, contentType: 'application/json', text: json)
+    }
+    
     def changePassword(){
         log.info("changePassword, parametros "+request.JSON)
-        User usuario = User.get(request.JSON.id)
+        User user = User.get(request.JSON.id)
         
-        if(usuario==null){
+        if(user==null){
             render status: NOT_FOUND
             return
         }
         
-       String passwordAnterior = springSecurityService.encodePassword("user1");
-       log.info("Resultado de comparacion: "+usuario.password.compareTo(passwordAnterior))
-       if(usuario.password.compareTo(passwordAnterior)!=0){
-            usuario.errors.rejectValue('password',passwordAnterior,'Contraseña anterior inválida')
-            log.info "No coincide la contraseña anterior password: "+usuario.password+" passwordAnterior: "+passwordAnterior
+
+        
+       
+       if(!passwordEncoder.isPasswordValid(user.password,request.JSON.oldPassword,null)){
+            user.errors.rejectValue('password',request.JSON.oldPassword,'Contraseña anterior inválida')
+//            log.info "No coincide la contraseña anterior password: "+user.password+" passwordAnterior: "+request.JSON.oldPassword
             
        }
             
-       usuario.password = request.JSON.newPassword
-       if (usuario.hasErrors()/* || !turnoInstance.validate()*/){
-            usuario.errors.each{
+       user.password = request.JSON.newPassword
+       if (user.hasErrors()){
+            user.errors.each{
                 log.debug('ERROR!!!: '+it)
             }
-            render (view:"/errors/_errors",model:[errors:usuario.errors])
+            render (view:"/errors/_errors",model:[errors:user.errors])
             return
        }
-        usuario.save(flush:true)
+        user.save(flush:true)
         
     }
 }
