@@ -17,7 +17,7 @@ class UrlMappings {
         //----------usuario-------
         
         get "/api/showuser" (controller:"user",action:"getUserInformation")
-        
+        put "/api/changepassword" (controller:"user",action:"changePassword")
         
     }
 }

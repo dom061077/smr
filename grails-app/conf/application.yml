@@ -94,7 +94,7 @@ environments:
         dataSource:
             dbCreate: create-drop
         grails:
-            serverURL: http://134.14.1.3:8080/smr            
+            serverURL: http://localhost:8080/smr            
             
     test:
         dataSource:
