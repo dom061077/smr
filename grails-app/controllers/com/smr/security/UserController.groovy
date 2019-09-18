@@ -32,9 +32,10 @@ class UserController {
     
     def oldPasswordValidation(){
         log.info("oldPasswordValidation, parametros: "+request.JSON)
+        log.info("CURRENT USER: "+springSecurityService.getCurrentUser().username);
         JSONBuilder jsonBuilder = new JSONBuilder()
         boolean passwordValida = false
-        def user = User.findByUsername(request.JSON.username)
+        def user = User.findByUsername(springSecurityService.getCurrentUser().username)
         if(passwordEncoder.isPasswordValid(user?.password,request.JSON.oldPassword,null))
             passwordValida = true
         def json = jsonBuilder.build{
@@ -45,7 +46,10 @@ class UserController {
     
     def changePassword(){
         log.info("changePassword, parametros "+request.JSON)
-        User user = User.get(request.JSON.id)
+        
+        
+        
+        User user = User.get(springSecurityService.getCurrentUser().id)
         
         if(user==null){
             render status: NOT_FOUND
