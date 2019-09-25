@@ -92,7 +92,7 @@ environments:
         server:
             contextPath: '/smr'
         dataSource:
-            dbCreate: create-drop
+            dbCreate: update
         grails:
             serverURL: http://localhost:8080/smr            
             

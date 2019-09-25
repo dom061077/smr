@@ -10,11 +10,12 @@ class Alumno {
     String apellido
     String nombre
     java.sql.Date fechaNacimiento
+
     int dni
     String cuil
     String direccion
-    boolean planSocial
-    boolean trabaja
+    boolean planSocial=false
+    boolean trabaja=false
     
     String apellidoTutor
     String nombreTutor
@@ -23,26 +24,30 @@ class Alumno {
     String cuilTutor
     String telefono1
     String telefono2
-    boolean fotoDni
-    boolean constanciaCuil
-    boolean constancia6grado
-    boolean actaNacimiento
-    boolean constaciaRegular
-    boolean foto4x4
-    boolean fotoCarnetVac
-    boolean fichaMedica
-    boolean aptitudFisica
-    boolean grupoSanguineo
-    boolean fichaInscripcion
-    boolean libreta6grado
-    boolean fotocopiaLibroMatriz
-    boolean fotocopiaDniTutor
-    boolean constanciaCuilTutor
+    boolean fotoDni=false
+    boolean constanciaCuil=false
+    boolean constancia6grado=false
+    boolean actaNacimiento=false
+    boolean constaciaRegular=false
+    boolean foto4x4=false
+    boolean fotoCarnetVac=false
+    boolean fichaMedica=false
+    boolean aptitudFisica=false
+    boolean grupoSanguineo=false
+    boolean fichaInscripcion=false
+    boolean libreta6grado=false
+    boolean fotocopiaLibroMatriz=false
+    boolean fotocopiaDniTutor=false
+    boolean constanciaCuilTutor=false
     
     
     
     
     static constraints = {
         fechaNacimiento(nullable:true, blank:true)
+        cuil(nullable:true,blank:true)
+        cuilTutor(nullable:true,blank:true);
+        telefono1(nullable:true,blank:true)
+        telefono2(nullable:true,blank:true)
     }
 }
