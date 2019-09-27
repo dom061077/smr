@@ -23,6 +23,6 @@ class UrlMappings {
         //---------------LOCATIONS----------------
         
         get "/api/autocprov" (controller:"location",action:"autocompleteProvincias")
-        
+        get "/api/autocloc" (controller:"location",action:"autocompleteLocalidades")
     }
 }

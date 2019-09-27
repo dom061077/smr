@@ -14,22 +14,29 @@ class LocationController {
     def index() { }
     
     def autocompleteProvincias(){
-        def list = Provincia.list()
+        log.info("Autocompleteprovincias parametros: "+params)
+        def c = Provincia.createCriteria()
+        def list = c.list{
+            ilike("nombre",'%'+params.search+'%')
+        }
         /*def json = []
         list.each{p->
             json << [id:p.id,nombre:p.nombre]
         }*/
        
         //render json as grails.converters.JSON
-        render(view:"/alumno/autocompleteloc",model:[list:list])
+        render(view:"/alumno/autocompleteprov",model:[list:list])
     }
     
     def autocompleteLocalidades(){
-        def list = Localidad.list()
-        def json = []
-        list.each{l->
-            json << [id:l.id,nombre:l.nombre]
+
+        def c = Localidad.createCriteria()
+        def list = c.list{
+            ilike("nombre",'%'+params.search+'%')
+            provincia{
+                eq("id",params.provincia)
+            }
         }
-        //render json as 
+        render(view:"/alumno/autocompleteloc",model:[list:list])
     }
 }

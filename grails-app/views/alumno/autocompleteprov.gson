@@ -1,0 +1,14 @@
+
+import com.smr.alumno.Provincia
+
+model{
+    List<Provincia> list
+}
+
+json{
+    /*provincias list,{Provincia p ->
+        nombre p.nombre
+        id   p.id
+    }*/
+    provincias list.collect{[id:it.id,nombre:it.nombre]}
+}
