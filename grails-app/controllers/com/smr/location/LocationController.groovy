@@ -34,7 +34,7 @@ class LocationController {
         def list = c.list{
             ilike("nombre",'%'+params.search+'%')
             provincia{
-                eq("id",params.provincia)
+                eq("id",new Long(params.provincia))
             }
         }
         render(view:"/alumno/autocompleteloc",model:[list:list])
