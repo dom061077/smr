@@ -19,7 +19,7 @@ class Alumno {
     
     String apellidoTutor
     String nombreTutor
-    String parentescoTutor
+    
     int dniTutor
     String cuilTutor
     String telefono1
@@ -40,7 +40,10 @@ class Alumno {
     boolean fotocopiaDniTutor=false
     boolean constanciaCuilTutor=false
     
+    Localidad localidad
+    ParentescoTutor parentescoTutor
     
+    static belongsTo = [localidad:Localidad,parentescoTutor:ParentescoTutor]
     
     
     static constraints = {

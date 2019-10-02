@@ -24,5 +24,10 @@ class UrlMappings {
         
         get "/api/autocprov" (controller:"location",action:"autocompleteProvincias")
         get "/api/autocloc" (controller:"location",action:"autocompleteLocalidades")
+        get "/api/autocparentesco" (controller:"alumno",action:"autocompleteParentescoTutor")
+        
+        //----------Alumno------------------
+        post "/api/savealumno" (controller:"alumno",action:"save")
+        
     }
 }

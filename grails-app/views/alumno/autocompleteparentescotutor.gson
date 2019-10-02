@@ -1,0 +1,10 @@
+import com.smr.alumno.ParentescoTutor
+
+model{
+    List<ParentescoTutor> list
+}
+
+json{
+    parentescos list.collect{[id:it.id,descripcion:it.descripcion]}
+}
+
