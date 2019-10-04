@@ -43,4 +43,16 @@ class AlumnoController {
         }
         render(status: 200, contentType: 'application/json', text: json)        
     }
+    
+    def listAlumnos(String search){
+        log.info('Listado de alumnos, filtro '+search)
+        def list = Alumno.createCriteria().list{
+            or{
+                ilike("apellido",'%'+search+'%')
+                ilike("nombre",'%'+search+'%')
+            }
+            
+        }
+        render(view:'/alumno/listAlumnos',model:[list:list])
+    }
 }

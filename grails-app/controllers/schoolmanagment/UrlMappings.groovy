@@ -28,6 +28,7 @@ class UrlMappings {
         
         //----------Alumno------------------
         post "/api/savealumno" (controller:"alumno",action:"save")
+        get "/api/getalumnos" (controller:"alumno",action:"listAlumnos")
         
     }
 }

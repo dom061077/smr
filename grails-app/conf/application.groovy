@@ -46,6 +46,11 @@ grails.plugin.springsecurity.filterChain.chainMap = [
         pattern: '/api/**',
         filters: 'JOINED_FILTERS,-anonymousAuthenticationFilter,-exceptionTranslationFilter,-authenticationProcessingFilter,-securityContextPersistenceFilter,-rememberMeAuthenticationFilter'
     ],
+    [
+
+                pattern: '/oauth/**',
+                filters: 'JOINED_FILTERS,-restTokenValidationFilter,-restExceptionTranslationFilter'
+    ],    
     [pattern: '/**',             filters: 'JOINED_FILTERS']
     
 ]

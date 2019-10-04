@@ -1,0 +1,9 @@
+import com.smr.alumno.Alumno
+
+model{
+    List<Alumno> list
+}
+
+json{
+    alumnos list.collect{[id:it.id,dni:it.dni,cuil:it.cuil,apellido:it.apellido,nombre:it.nombre]}
+}
