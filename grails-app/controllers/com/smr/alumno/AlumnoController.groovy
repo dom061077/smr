@@ -44,12 +44,14 @@ class AlumnoController {
         render(status: 200, contentType: 'application/json', text: json)        
     }
     
-    def listAlumnos(String search){
-        log.info('Listado de alumnos, filtro '+search)
+    def listAlumnos(String filter){
+        log.info('Listado de alumnos, filtro '+filter)
         def list = Alumno.createCriteria().list{
-            or{
-                ilike("apellido",'%'+search+'%')
-                ilike("nombre",'%'+search+'%')
+            if(filter.compareTo("")==0){
+                or{
+                    ilike("apellido",'%'+filter+'%')
+                    ilike("nombre",'%'+filter+'%')
+                }
             }
             
         }
