@@ -28,7 +28,7 @@ class Alumno {
     boolean constanciaCuil=false
     boolean constancia6grado=false
     boolean actaNacimiento=false
-    boolean constaciaRegular=false
+    boolean constanciaRegular=false
     boolean foto4x4=false
     boolean fotoCarnetVac=false
     boolean fichaMedica=false
@@ -52,5 +52,7 @@ class Alumno {
         cuilTutor(nullable:true,blank:true);
         telefono1(nullable:true,blank:true)
         telefono2(nullable:true,blank:true)
+        
+        
     }
 }
