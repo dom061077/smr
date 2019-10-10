@@ -47,7 +47,7 @@ class AlumnoController {
     def listAlumnos(String filter,int start, int limit){
         log.info('Listado de alumnos, filtro '+filter)
     	def pagingconfig = [
-    		max: limit as Integer?:100,
+    		max: limit as Integer?:20,
     		offset: start as Integer?:0
     	]        
         def list = Alumno.createCriteria().list(pagingconfig){
@@ -64,7 +64,9 @@ class AlumnoController {
     
     def count(){
         log.info('Cantidad de alumnos ')
-        int cantidad = Alumno.count()
+        int totalAlumnos = Alumno.count()
+        int cantidad = totalAlumnos/20
+        cantidad = cantidad*20
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build{
             count = cantidad
