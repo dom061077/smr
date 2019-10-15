@@ -45,6 +45,11 @@ class Alumno {
     
     static belongsTo = [localidad:Localidad,parentescoTutor:ParentescoTutor]
     
+    java.sql.Date getFechaNacimientoUnbinding(){
+        return fechaNacimiento;
+    }
+    
+    static transients = ['fechaNacimientoUnbinding']
     
     static constraints = {
         fechaNacimiento(nullable:true, blank:true)
