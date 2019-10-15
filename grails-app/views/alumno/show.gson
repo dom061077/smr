@@ -1,0 +1,7 @@
+import com.smr.alumno.Alumno
+
+model{
+    Alumno alumno
+}
+
+json g.render(alumno,[deep:true])

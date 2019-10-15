@@ -65,12 +65,27 @@ class AlumnoController {
     def count(){
         log.info('Cantidad de alumnos ')
         int totalAlumnos = Alumno.count()
-        int cantidad = totalAlumnos/20
-        cantidad = cantidad*20
         JSONBuilder jsonBuilder = new JSONBuilder()
+        /*int cantidad
+        
+        if(totalAlumnos>20){
+        
+            cantidad = totalAlumnos/20
+            cantidad = cantidad*20
+            
+        }else{
+            cantidad=totalAlumnos
+        }*/
         def json = jsonBuilder.build{
-            count = cantidad
+            count = totalAlumnos
         }
         render(status: 200, contectType:'application/json',text:json)
+    }
+    
+    def show(Long id){
+        log.info('Retornar alumno')
+        def alumnoInstance = Alumno.get(id)
+
+        render(view:'/alumno/show',model:[alumno:alumnoInstance])
     }
 }
