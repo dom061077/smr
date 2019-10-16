@@ -57,6 +57,7 @@ class Alumno {
         cuilTutor(nullable:true,blank:true);
         telefono1(nullable:true,blank:true)
         telefono2(nullable:true,blank:true)
+        apellido(nullable:false,blank:false)
         
         
     }

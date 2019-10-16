@@ -27,15 +27,17 @@ class AlumnoController {
         
         log.info("Alumno Instance: "+alumnoInstance.properties)
         
-        if(alumnoInstance.hasErrors()){
-            alumnoInstance.errors.each{
-                log.debug('ERROR!!!: '+it)
-            }
-            render (view:"/errors/_errors",model:[errors:alumnoInstance.errors])
-            return            
-        }
         
-        alumnoInstance.save(flush:true)
+        
+        if (!alumnoInstance.save(flush:true)){
+            if(alumnoInstance.hasErrors() && !alumnoInstance.validate()){
+                alumnoInstance.errors.each{
+                    log.debug('ERROR!!!: '+it)
+                }
+                render (view:"/errors/_errors",model:[errors:alumnoInstance.errors])
+                return            
+            }            
+        }
         
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build{
@@ -87,5 +89,11 @@ class AlumnoController {
         def alumnoInstance = Alumno.get(id)
 
         render(view:'/alumno/show',model:[alumno:alumnoInstance])
+    }
+    
+    def update(){
+        log.info("Parametros update alumno "+request.JSON)
+        def alumnoInstance = Alumno.get(request.JSON.id)
+        
     }
 }
