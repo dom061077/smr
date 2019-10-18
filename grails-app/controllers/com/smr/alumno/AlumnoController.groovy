@@ -95,5 +95,21 @@ class AlumnoController {
         log.info("Parametros update alumno "+request.JSON)
         def alumnoInstance = Alumno.get(request.JSON.id)
         
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = null
+        
+        if(!alumnoInstance){
+            json = jsonBuilder.build{
+                success = false
+            }
+            render(status:200, contentType:'application/json',text: json)
+            return
+        }
+        
+        json = jsonBuilder.build{
+            success = true
+        }
+        render(status: 200, contentType: 'application/json', text: json)        
+        
     }
 }
