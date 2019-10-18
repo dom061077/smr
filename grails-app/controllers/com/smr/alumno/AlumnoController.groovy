@@ -101,10 +101,24 @@ class AlumnoController {
         if(!alumnoInstance){
             json = jsonBuilder.build{
                 success = false
+                msg     = 'No existe el registro con id '+request.JSON.id+'. Operación cancelada'
             }
             render(status:200, contentType:'application/json',text: json)
             return
         }
+        alumnoInstance.properties = request.JSON
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        Date date = sdf.parse(request.JSON.fechaNacimientoUnbinding)
+        alumnoInstance.fechaNacimiento = new java.sql.Date(date.getTime())        
+        if(alumnoInstance.save(flush:true)){
+            if(alumnoInstance.hasErrors() && !alumnoInstance.validate()){
+                render (view:"/errors/_errors",model:[errors:alumnoInstance.errors])
+                return                    
+            }
+        }
+        
+        
+        
         
         json = jsonBuilder.build{
             success = true
