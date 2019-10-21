@@ -49,7 +49,11 @@ class Alumno {
         return fechaNacimiento;
     }
     
-    static transients = ['fechaNacimientoUnbinding']
+    String getApellidoNombre(){
+        return apellido+' '+nombre
+    }
+    
+    static transients = ['fechaNacimientoUnbinding','apellidoNombre']
     
     static constraints = {
         fechaNacimiento(nullable:true, blank:true)

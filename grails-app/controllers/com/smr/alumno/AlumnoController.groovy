@@ -53,31 +53,35 @@ class AlumnoController {
     		offset: start as Integer?:0
     	]        
         def list = Alumno.createCriteria().list(pagingconfig){
-            if(filter.compareTo("")==0){
+            if(filter.compareTo("")!=0){
                 or{
                     ilike("apellido",'%'+filter+'%')
                     ilike("nombre",'%'+filter+'%')
                 }
+                
             }
             
         }
         render(view:'/alumno/listAlumnos',model:[list:list])
     }
     
-    def count(){
+    def count(String filter){
         log.info('Cantidad de alumnos ')
-        int totalAlumnos = Alumno.count()
-        JSONBuilder jsonBuilder = new JSONBuilder()
-        /*int cantidad
+        int totalAlumnos =0
         
-        if(totalAlumnos>20){
-        
-            cantidad = totalAlumnos/20
-            cantidad = cantidad*20
+        def c = Alumno.createCriteria()
+        totalAlumnos = c.count{
+            if(filter?.compareTo("")!=0){
+                or{
+                    ilike("apellido",'%'+filter+'%')
+                    ilike("nombre",'%'+filter+'%')
+                }
+                
+            }
+        }
             
-        }else{
-            cantidad=totalAlumnos
-        }*/
+        JSONBuilder jsonBuilder = new JSONBuilder()
+
         def json = jsonBuilder.build{
             count = totalAlumnos
         }
