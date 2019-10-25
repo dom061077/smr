@@ -5,17 +5,20 @@ import grails.rest.*
 import grails.converters.*
 import grails.web.JSONBuilder
 import java.text.SimpleDateFormat
+import grails.plugin.springsecurity.annotation.Secured
 
 class AlumnoController {
 	static responseFormats = ['json', 'xml']
 	
     def index() { }
     
+    @Secured(['ROLE_DIRECTORA'])
     def autocompleteParentescoTutor(){
         def list = ParentescoTutor.list()
         render(view:'/alumno/autocompleteparentescotutor',model:[list:list])
     }
     
+    @Secured(['ROLE_DIRECTORA'])
     def save(){
         log.info("Parametros de save alumno: "+request.JSON)
         def alumnoInstance = new Alumno(request.JSON)
@@ -95,6 +98,7 @@ class AlumnoController {
         render(view:'/alumno/show',model:[alumno:alumnoInstance])
     }
     
+    @Secured(['ROLE_DIRECTORA'])
     def update(){
         log.info("Parametros update alumno "+request.JSON)
         def alumnoInstance = Alumno.get(request.JSON.id)
