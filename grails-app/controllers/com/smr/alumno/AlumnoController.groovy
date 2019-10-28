@@ -134,4 +134,5 @@ class AlumnoController {
         render(status: 200, contentType: 'application/json', text: json)        
         
     }
+    
 }

@@ -77,6 +77,48 @@ class UserController {
         
     }
      
+    private recursive(def det){
+            def innerItems=[]
+            if(det.items.size()>0){
+                det.items.each{
+                    if(it.items.size()>0)
+                        innerItems.add( [label:it.label,icon:it.icon,items:recursive(it)])
+                        
+                    else{
+                            
+                          if(it.routerLink)  
+                                innerItems.add( [label:it.label,icon:it.icon,routerLink:it.routerLink ]   )
+                          else      
+                                innerItems.add( [label:it.label,icon:it.icon]    )  
+                            
+                     }
+                }
+                
+                return [label:det.label,icon:det.icon,items:innerItems]
+            }else{
+                return [label:det.label,icon:det.icon]    
+                }
+        
+    }
+    def listMenu(){
+        log.info("INGRESANDO AL listMenu XXXXXXXXXXXX")
+        def c = MenuItem.createCriteria()
+
+        def list = c.list{
+                eq("root",true)
+            }
+
+        def finalList=[]
+        list.each{
+                 finalList.add(recursive(it))
+        }            
+        
+
+        render(status: 200, contentType: 'application/json', text: finalList as JSON)        
+        
+
+    }
+    
     
 }
  

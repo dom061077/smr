@@ -19,6 +19,7 @@ class UrlMappings {
         get "/api/showuser" (controller:"user",action:"getUserInformation")
         put "/api/changepassword" (controller:"user",action:"changePassword")
         post "/api/validateoldpassword" (controller:"user",action:"oldPasswordValidation")
+        get "/api/getmenu" (controller:"user",action:"listMenu")
         
         //---------------LOCATIONS----------------
         
@@ -26,12 +27,14 @@ class UrlMappings {
         get "/api/autocloc" (controller:"location",action:"autocompleteLocalidades")
         get "/api/autocparentesco" (controller:"alumno",action:"autocompleteParentescoTutor")
         
+        
         //----------Alumno------------------
         post "/api/savealumno" (controller:"alumno",action:"save")
         get "/api/getalumnos"  (controller:"alumno",action:"listAlumnos")
         get "/api/alumnocount" (controller:"alumno", action:"count")
         get "/api/getalumno/$id"   (controller:"alumno", action:"show")
         put "/api/updatealumno/$id" (controller:"alumno",action:"update")
+        
 
         
     }
