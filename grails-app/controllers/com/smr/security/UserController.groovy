@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import com.smr.security.User
 
 
-@Secured("hasAnyRole('ROLE_USER','ROLE_PROFESIONAL')")
+
 class UserController {
 	static responseFormats = ['json', 'xml']
     
@@ -117,6 +117,23 @@ class UserController {
         render(status: 200, contentType: 'application/json', text: finalList as JSON)        
         
 
+    }
+    
+    @Secured(['ROLE_USER_SAVE'])
+    def save(){
+        log.info("Ingresando a save: "+request.JSON)
+        def usuarioInstance = new User(request.JSON)
+        if(!usuarioInstance.save(flush:true)){
+            if(usuarioInstance.hasErrors() && !usuarioInstance.validate()){
+                render(view:"/errors/_errors",model:[errors:usuarioInstance.errors])
+                return
+            }
+        }
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            success = true
+        }
+        render(status: 200, contectType:'application/json',text:json)
     }
     
     

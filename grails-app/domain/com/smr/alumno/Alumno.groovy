@@ -4,7 +4,6 @@ import java.sql.Date
 import grails.rest.*
 import grails.plugin.springsecurity.annotation.Secured
 
-@Secured("hasAnyRole('ROLE_USER','ROLE_PROFESIONAL')")
 @Resource(uri='/api/alumnos',formats=['json', 'xml'])
 class Alumno {
     String apellido

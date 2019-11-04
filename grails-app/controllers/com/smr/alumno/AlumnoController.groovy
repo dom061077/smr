@@ -12,13 +12,13 @@ class AlumnoController {
 	
     def index() { }
     
-    @Secured(['ROLE_DIRECTORA'])
+    
     def autocompleteParentescoTutor(){
         def list = ParentescoTutor.list()
         render(view:'/alumno/autocompleteparentescotutor',model:[list:list])
     }
     
-    @Secured(['ROLE_DIRECTORA'])
+    @Secured(['ROLE_ALUMNO_SAVE'])
     def save(){
         log.info("Parametros de save alumno: "+request.JSON)
         def alumnoInstance = new Alumno(request.JSON)
@@ -98,7 +98,7 @@ class AlumnoController {
         render(view:'/alumno/show',model:[alumno:alumnoInstance])
     }
     
-    @Secured(['ROLE_DIRECTORA'])
+    @Secured(['ROLE_ALUMNO_UPDATE'])
     def update(){
         log.info("Parametros update alumno "+request.JSON)
         def alumnoInstance = Alumno.get(request.JSON.id)
