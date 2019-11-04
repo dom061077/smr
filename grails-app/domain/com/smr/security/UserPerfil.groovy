@@ -9,7 +9,7 @@ import grails.compiler.GrailsCompileStatic
 @GrailsCompileStatic
 @ToString(cache=true, includeNames=true, includePackage=false)
 class UserPerfil implements Serializable {
-
+    private static final long serialVersionUID = 1
     User user
     Perfil perfil
     

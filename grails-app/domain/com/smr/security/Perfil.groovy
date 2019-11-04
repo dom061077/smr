@@ -4,7 +4,7 @@ class Perfil {
     String descripcion
     
     
-    static hasMany = [authorities:Authority]
+    
     
     static constraints = {
         
