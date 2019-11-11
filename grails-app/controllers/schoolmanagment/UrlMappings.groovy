@@ -20,6 +20,7 @@ class UrlMappings {
         put "/api/changepassword" (controller:"user",action:"changePassword")
         post "/api/validateoldpassword" (controller:"user",action:"oldPasswordValidation")
         get "/api/getmenu" (controller:"user",action:"listMenu")
+        get "/api/getresturls" (controller:"user",action:"listAuthorities")
         
         //---------------LOCATIONS----------------
         

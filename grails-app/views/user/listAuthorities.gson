@@ -1,0 +1,9 @@
+import com.smr.security.User
+
+model{
+    List<Authority> list
+}
+
+json{
+    authorities list.collect{[id:it.id,descripcion:it.authority]}
+}

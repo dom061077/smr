@@ -137,5 +137,16 @@ class UserController {
     }
     
     
+    def listAuthorities(){
+        log.info("Ingresando a listAuthorities")
+        def list = Authority.list()
+        render (view:'/user/listAuthorities',model:[list:list])
+    }
+    
+    def countAuthorities(){
+        continuar aqui
+    }
+    
+    
 }
  
