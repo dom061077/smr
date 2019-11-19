@@ -5,5 +5,5 @@ model{
 }
 
 json{
-    authorities list.collect{[id:it.id,descripcion:it.authority]}
+    authorities list.collect{[id:it.id,authority:it.authority]}
 }

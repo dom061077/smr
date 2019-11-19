@@ -21,6 +21,7 @@ class UrlMappings {
         post "/api/validateoldpassword" (controller:"user",action:"oldPasswordValidation")
         get "/api/getmenu" (controller:"user",action:"listMenu")
         get "/api/getresturls" (controller:"user",action:"listAuthorities")
+        post "/api/saveperfil" (controller:"perfil",action:"save")
         
         //---------------LOCATIONS----------------
         
