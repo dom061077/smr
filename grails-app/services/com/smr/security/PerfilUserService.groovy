@@ -10,7 +10,7 @@ class PerfilUserService {
         def perfilSaved = perfilInstance.save()
         if(perfilSaved){
             authorities.each{
-               def authInstance = Authority.findByAuthority(it.authority)
+               def authInstance //= Authority.findByAuthority(it.authority)
                PerfilAuthority.create(perfilSaved,authInstance)
             }
             return perfilSaved

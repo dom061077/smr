@@ -16,9 +16,9 @@ class PerfilController {
     def save(){
         log.info("Ingresando a save "+request.JSON);
         def perfilInstance = new Perfil(descripcion:request.JSON.descripcion)
-        def perfilPocesado = perfilUserService.savePerfil(perfilInstance,request.JSON.authorities)
-        if(pefilProcesado.hasErrors()){
-            render (view:"/errors/_errors",model:[errors:alumnoInstance.errors])
+        def perfilProcesado = perfilUserService.savePerfil(perfilInstance,request.JSON.authorities)
+        if(perfilProcesado.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:perfilProcesado.errors])
             return
         }
         JSONBuilder jsonBuilder = new JSONBuilder()
