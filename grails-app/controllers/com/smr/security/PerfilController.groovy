@@ -26,6 +26,7 @@ class PerfilController {
             success = true
             id      = perfilProcesado?.id
         }
+        log.info("JSON devuelto: "+json)
         render(status: 200, contentType: 'application/json', text: json)         
     }
     
