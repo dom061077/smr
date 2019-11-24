@@ -4,16 +4,24 @@ import grails.gorm.transactions.Transactional
 
 @Transactional
 class PerfilUserService {
-    static transactional = true
+    
 
     def savePerfil(Perfil perfilInstance,def authorities) {
         def perfilSaved = perfilInstance.save()
         if(perfilSaved){
+            def authInstance
+            def perfilAuthInstance 
             authorities.each{
-               def authInstance //= Authority.findByAuthority(it.authority)
-               PerfilAuthority.create(perfilSaved,authInstance)
+                perfilAuthInstance=null
+               //authInstance = Authority.findByAuthority(it.authority)
+               perfilAuthInstance = PerfilAuthority.create(perfilInstance,authInstance)
+               if(!perfilAuthInstance.validate())
+               arreglar esto
+                    perfilSaved.errors.rejectValue('descripcion','','Algún un rol no fue cargado correctamente')
+               
             }
             return perfilSaved
+            
         }else
             return perfilInstance
         
