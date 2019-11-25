@@ -22,6 +22,7 @@ class UrlMappings {
         get "/api/getmenu" (controller:"user",action:"listMenu")
         get "/api/getresturls" (controller:"user",action:"listAuthorities")
         post "/api/saveperfil" (controller:"perfil",action:"save")
+        get "/api/perfilcount" (controller:"perfil",action:"count")
         
         //---------------LOCATIONS----------------
         

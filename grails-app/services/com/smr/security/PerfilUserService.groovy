@@ -2,6 +2,7 @@ package com.smr.security
 
 import grails.gorm.transactions.Transactional
 
+
 @Transactional
 class PerfilUserService {
     
@@ -12,12 +13,17 @@ class PerfilUserService {
             def authInstance
             def perfilAuthInstance 
             authorities.each{
+              
                 perfilAuthInstance=null
-               //authInstance = Authority.findByAuthority(it.authority)
+               authInstance = Authority.findByAuthority(it.authority)
                perfilAuthInstance = PerfilAuthority.create(perfilInstance,authInstance)
-               if(!perfilAuthInstance.validate())
-               arreglar esto
-                    perfilSaved.errors.rejectValue('descripcion','','Algún un rol no fue cargado correctamente')
+               
+               if(!perfilAuthInstance.authority){
+                    
+                    
+                    throw new Exception('Error en carga de rol');
+                    
+               }
                
             }
             return perfilSaved
@@ -25,5 +31,19 @@ class PerfilUserService {
         }else
             return perfilInstance
         
+    }
+    
+    def count(String filter){
+        log.info("Cantidad de perfiles")
+        int totalPerfiles=0
+        def c = Perfil.createCriteria()
+        totalPerfiles = c.count{
+            if(filter?.compareTo("")!=0){
+                or{
+                    ilike("descripcion",'%'+filter+'%')
+                }
+            }
+        }
+        return totalPerfiles
     }
 }
