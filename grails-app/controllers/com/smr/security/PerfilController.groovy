@@ -39,11 +39,28 @@ class PerfilController {
     def count(String filter){
         log.info('Cantidad de perfiles')
         JSONBuilder jsonBuilder = new JSONBuilder()
-        totalPerfiles = perfilUserService.count(filter)
+        def totalPerfiles = perfilUserService.count(filter)
         def json = jsonBuilder.build(){
             count = totalPerfiles
         }
         render(status: 200, contectType:'application/json',text:json)
     }
+    
+    def listPerfiles(String filter,int start, int limit){
+        log.info('Listado de perfiles, filtro '+filter)
+    	def pagingconfig = [
+    		max: limit as Integer?:20,
+    		offset: start as Integer?:0
+    	]        
+        def list = Perfil.createCriteria().list(pagingconfig){
+            if(filter.compareTo("")!=0){
+                    ilike("descripcion",'%'+filter+'%')
+                
+            }
+            
+        }
+        render(view:'/perfil/listPerfiles',model:[list:list])
+    }
+    
     
 }

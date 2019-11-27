@@ -1,0 +1,9 @@
+import com.smr.security.Perfil
+
+model{
+    List<Perfil> list
+}
+
+json{
+    perfiles list.collect {[id:it.id,descripcion:it.descripcion]}
+}
