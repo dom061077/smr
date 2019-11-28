@@ -7,6 +7,7 @@ class Perfil {
     
     
     static constraints = {
+        descripcion (nullable:false,blank:false,unique:true)
         
     }
 }
