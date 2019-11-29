@@ -21,7 +21,7 @@ class PerfilController {
             perfilProcesado=perfilUserService.savePerfil(perfilInstance,request.JSON.authorities)
         }catch(Exception e){
             log.error('Error al salvar perfil',e)
-            perfilInstance.errors.rejectValue('descripcion','','Algún un rol no fue cargado correctamente')
+            perfilInstance.errors.rejectValue('descripcion','','Algún rol no fue cargado correctamente')
         }
         if(perfilInstance.hasErrors()){
             render (view:"/errors/_errors",model:[errors:perfilInstance.errors])
@@ -35,6 +35,38 @@ class PerfilController {
         log.info("JSON devuelto: "+json)
         render(status: 200, contentType: 'application/json', text: json)         
     }
+    
+    def update(){
+        log.info("Ingresando a update "+request.JSON)
+        def perfilInstance = Perfil.get(request.JSON.id)
+        perfilInstance.properties = request.JSON
+        def perfilProcesado
+        try{
+           perfilProcesado = perfilUserService.updatePerfil(perfilInstance,request.JSON.authorities) 
+        }catch(Exception e){
+            log.error('Error al modificar el perfil',e)
+            perfilinstance.errors.rejectValue('descripcion','','Algún rol no fue cargado correctamente')
+        }
+        
+        if(perfilInstance.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:perfilInstance.errors])
+            return
+        }
+        
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            success = true
+            id      = perfilProcesado?.id
+        }
+        
+        render(status:200, contentType: 'application/json', text:json)
+
+        
+        
+        
+        
+    }
+    
     
     def count(String filter){
         log.info('Cantidad de perfiles')

@@ -14,7 +14,7 @@ class PerfilUserService {
             def perfilAuthInstance 
             authorities.each{
               
-                perfilAuthInstance=null
+               perfilAuthInstance=null
                authInstance = Authority.findByAuthority(it.authority)
                perfilAuthInstance = PerfilAuthority.create(perfilInstance,authInstance)
                
@@ -28,6 +28,24 @@ class PerfilUserService {
             }
             return perfilSaved
             
+        }else
+            return perfilInstance
+        
+    }
+    
+    def updatePerfil(Perfil perfilInstance,def authorities){
+        def perfilSaved = perfilInstance.save()
+        if(perfilSaved){
+            def authInstance
+            def perfilAuthInstance
+            PerfilAuthority.removeAll(perfilInstance)
+            authorities.each{
+                perfilAuthInstance=null
+                authInstance = Authority.findByAuthority(it.authority)
+                perfilAuthInstance = PerfilAuthority.create(perfilInstance,authInstance)
+                if(!perfilAuthInstance.authority)
+                    throw new Exception('Error en carga de rol')
+            }
         }else
             return perfilInstance
         
