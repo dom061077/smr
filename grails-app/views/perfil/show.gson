@@ -1,0 +1,8 @@
+
+import com.smr.security.Perfil
+
+model{
+    Perfil perfil
+}
+
+json g.render(perfil,[deep:true])

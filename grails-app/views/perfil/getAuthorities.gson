@@ -1,0 +1,9 @@
+import com.smr.security.PerfilAuthority
+
+model{
+    List<PerfilAuthority> list
+}
+
+json{
+    authorities list.collect{[id:it.authority.id,authority:it.authority.authority]}
+}

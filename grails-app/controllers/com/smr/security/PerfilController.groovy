@@ -65,19 +65,15 @@ class PerfilController {
     def show(Long id){
         log.info("Retornar perfil "+id)
         def perfilInstance = Perfil.get(id)
-        def list = PerfilAuthority.createCriteria().list(){
-            
-                eq("perfil.id",id)
-            
-        }
-        log.info("List: "+list)
+
         render(view:"/perfil/show",model:[perfil:perfilInstance])
     }
     
     def getAuthorities(Long id){
         log.info("Retornar authorities")
         def list = PerfilAuthority.createCriteria().list(){
-            eq("")
+            eq("perfil.id",id)
         } 
+        render(view:"/perfil/getAuthorities",model:[list:list])
     }
 }
