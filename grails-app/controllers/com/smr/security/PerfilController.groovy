@@ -38,18 +38,19 @@ class PerfilController {
     
     def update(){
         log.info("Ingresando a update "+request.JSON)
-        def perfilInstance = Perfil.get(request.JSON.id)
-        perfilInstance.properties = request.JSON
+        //def perfilInstance = Perfil.get(request.JSON.id)
+        //def perfilInstance = new Perfil()
+        //perfilInstance.properties = request.JSON
         def perfilProcesado
         try{
-           perfilProcesado = perfilUserService.updatePerfil(perfilInstance,request.JSON.authorities) 
+           perfilProcesado = perfilUserService.updatePerfil(request.JSON,request.JSON.authorities) 
         }catch(Exception e){
             log.error('Error al modificar el perfil',e)
-            perfilinstance.errors.rejectValue('descripcion','','Algún rol no fue cargado correctamente')
+            perfilProcesado.errors.rejectValue('descripcion','','Algún rol no fue cargado correctamente')
         }
         
-        if(perfilInstance.hasErrors()){
-            render (view:"/errors/_errors",model:[errors:perfilInstance.errors])
+        if(perfilProcesado.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:perfilProcesado.errors])
             return
         }
         

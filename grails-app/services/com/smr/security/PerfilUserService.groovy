@@ -33,7 +33,10 @@ class PerfilUserService {
         
     }
     
-    def updatePerfil(Perfil perfilInstance,def authorities){
+    def updatePerfil(def perfilParm,def authorities){
+        log.info("Id de perfil: "+perfilParm.id)
+        def perfilInstance = Perfil.get(perfilParm.id)
+        perfilInstance.properties = perfilParm
         def perfilSaved = perfilInstance.save()
         if(perfilSaved){
             def authInstance
@@ -46,6 +49,7 @@ class PerfilUserService {
                 if(!perfilAuthInstance.authority)
                     throw new Exception('Error en carga de rol')
             }
+            return perfilSaved
         }else
             return perfilInstance
         

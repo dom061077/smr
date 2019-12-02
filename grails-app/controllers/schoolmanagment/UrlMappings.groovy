@@ -26,6 +26,7 @@ class UrlMappings {
         get "/api/getperfiles" (controller:"perfil",action:"listPerfiles")
         get "/api/getperfil/$id" (controller:"perfil",action:"show")
         get "/api/getroles/$id" (controller:"perfil",action:"getAuthorities")
+        post "/api/updateperfil/$id" (controller:"perfil",action:"update")
         
         //---------------LOCATIONS----------------
         
