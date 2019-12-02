@@ -109,4 +109,14 @@ class PerfilController {
         } 
         render(view:"/perfil/getAuthorities",model:[list:list])
     }
+    
+    def getNgUrls(Long id){
+        log.info("Retornar ngurls")
+        def list = PerfilNgUrl.createCriteria().list(){
+            if(id)
+                eq("perfil.id",id)
+        }
+        
+        render(view:"/perfil/getNgUrls",model:[list:list])
+    }
 }
