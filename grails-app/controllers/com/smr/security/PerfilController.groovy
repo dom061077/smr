@@ -117,12 +117,12 @@ class PerfilController {
         render(view:"/perfil/getNgUrls",model:[list:list])
     }
     
-    def getNgUrls(Long id){
+    def getNgPerfilUrls(Long id){
         log.info("Retornar ngurls por id"+id)
         def list = PerfilNgUrl.createCriteria().list(){
             eq("perfil.id",id)
         }
-        render (view:"/perfil/getNgUrlsPerfil",model:[list:list])
+        render (view:"/perfil/getNgPerfilUrls",model:[list:list])
     }
     
     def savePerfilUrls(){
@@ -130,7 +130,7 @@ class PerfilController {
         def perfilInstance = new Perfil()
         def flagRetorno
         try{
-            flagRetorno = perfilUserService.savePerfilUrls(request.JSON.id,request.JSON.urls)
+            flagRetorno = perfilUserService.savePerfilUrls(request.JSON.id,request.JSON.ngurls)
         }catch(Exception e){
             log.error("Error al salvar urls de perfil",e)
             perfilInstance.errors.rejectValue("descripcion",'','Alguna url no fue cargada correctamente')

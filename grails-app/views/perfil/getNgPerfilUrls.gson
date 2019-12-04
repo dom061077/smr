@@ -1,0 +1,11 @@
+
+import com.smr.security.PerfilNgUrl
+
+
+model{
+    List<PerfilNgUrl> list
+}
+
+json{
+    ngurls list.collect{[id:it.ngUrl.id,url:it.ngUrl.url]}
+}

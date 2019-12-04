@@ -61,6 +61,7 @@ class PerfilUserService {
         if(perfilInstance){
             def ngUrlInstance 
             def perfilNgUrl
+            PerfilNgUrl.removeAll(perfilInstance)
             urls.each{
                 ngUrlInstance = NgURL.findByUrl(it.url)
                 perfilNgUrl = PerfilNgUrl.create(perfilInstance,ngUrlInstance)
