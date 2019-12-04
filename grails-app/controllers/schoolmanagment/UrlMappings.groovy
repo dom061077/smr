@@ -28,6 +28,7 @@ class UrlMappings {
         get "/api/getroles/$id" (controller:"perfil",action:"getAuthorities")
         post "/api/updateperfil/$id" (controller:"perfil",action:"update")
         get "/api/getngurls" (controller:"perfil",action:"getNgUrls")
+        post "/api/saveperfilurls" (controller:"perfil",action:"savePerfilUrls")
         
         //---------------LOCATIONS----------------
         

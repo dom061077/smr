@@ -55,6 +55,25 @@ class PerfilUserService {
         
     }
     
+    def savePerfilUrls(Long perfilId,def urls){
+        log.info("Id de perfil:"+perfilId+" urls: "+urls)
+        def perfilInstance = Perfil.get(perfilId)
+        if(perfilInstance){
+            def ngUrlInstance 
+            def perfilNgUrl
+            urls.each{
+                ngUrlInstance = NgURL.findByUrl(it.url)
+                perfilNgUrl = PerfilNgUrl.create(perfilInstance,ngUrlInstance)
+                if(!perfilNgUrl)
+                    throw new Exception("Error en carga")
+                return true    
+            }
+            
+        }else{
+            return false
+        }
+    }
+    
     def count(String filter){
         log.info("Cantidad de perfiles")
         int totalPerfiles=0

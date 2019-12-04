@@ -110,13 +110,42 @@ class PerfilController {
         render(view:"/perfil/getAuthorities",model:[list:list])
     }
     
-    def getNgUrls(Long id){
+    def getNgUrls(){//raw urls
         log.info("Retornar ngurls")
-        def list = PerfilNgUrl.createCriteria().list(){
-            if(id)
-                eq("perfil.id",id)
-        }
-        
+        def list = NgURL.list()
+        log.info("Listado: "+list)
         render(view:"/perfil/getNgUrls",model:[list:list])
+    }
+    
+    def getNgUrls(Long id){
+        log.info("Retornar ngurls por id"+id)
+        def list = PerfilNgUrl.createCriteria().list(){
+            eq("perfil.id",id)
+        }
+        render (view:"/perfil/getNgUrlsPerfil",model:[list:list])
+    }
+    
+    def savePerfilUrls(){
+        log.info("Ingresando a savePerfilUrls "+request.JSON)
+        def perfilInstance = new Perfil()
+        def flagRetorno
+        try{
+            flagRetorno = perfilUserService.savePerfilUrls(request.JSON.id,request.JSON.urls)
+        }catch(Exception e){
+            log.error("Error al salvar urls de perfil",e)
+            perfilInstance.errors.rejectValue("descripcion",'','Alguna url no fue cargada correctamente')
+        }
+        if(perfilInstance.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:perfilInstance.errors])
+            return
+        }
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            success = true
+            
+        }
+        log.info('JSON devuelto: '+json)
+        render(status: 200,contentType:'application/json',text: json)
+        
     }
 }
