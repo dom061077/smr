@@ -147,6 +147,31 @@ class UserController {
         continuar aqui
     }
     
+    def listUsuarios(String filter,int start, int limit){
+        log.info("Ingresando a listUsuarios")
+        def pagingconfig = [
+            max: limit as Integer?:10,
+            offset:start as Integer?:0
+        ]
+        def list = User.createCriteria().list(pagingconfig){
+            if(filter.compareTo("")!=0){
+                or{
+                    ilike("apellido",'%'+filter+'%')
+                    ilike("nombre",'%'+filtro+'%')
+                    ilike("username",'%'+filtro+'%')
+                }
+            }
+        }
+        render(view:'/user/listUsuarios',model:[list:list])
+    }
+    
+    def show(Long id){
+        log.info("Retornar usuario")
+        def usuarioInstance = User.get(id)
+        log.info("Usuario: "+usuarioInstance)
+        render (view:'/user/show',model:[user:usuarioInstance])
+    }
+    
     
 }
  

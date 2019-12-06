@@ -30,7 +30,8 @@ class UrlMappings {
         get "/api/getngurls" (controller:"perfil",action:"getNgUrls")
         get "/api/getngperfilurls/$id" (controller:"perfil",action:"getNgPerfilUrls")
         post "/api/saveperfilurls" (controller:"perfil",action:"savePerfilUrls")
-        
+        get "/api/getusuarios" (controller:"user",action:"listUsuarios")
+        get "/api/getuser/$id" (controller:"user",action:"show")
         //---------------LOCATIONS----------------
         
         get "/api/autocprov" (controller:"location",action:"autocompleteProvincias")
