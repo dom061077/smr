@@ -32,6 +32,7 @@ class UrlMappings {
         post "/api/saveperfilurls" (controller:"perfil",action:"savePerfilUrls")
         get "/api/getusuarios" (controller:"user",action:"listUsuarios")
         get "/api/getuser/$id" (controller:"user",action:"show")
+        post "/api/saveusuario" (controller:"user",action:"save")
         //---------------LOCATIONS----------------
         
         get "/api/autocprov" (controller:"location",action:"autocompleteProvincias")

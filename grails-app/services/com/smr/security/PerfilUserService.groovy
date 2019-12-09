@@ -55,6 +55,8 @@ class PerfilUserService {
         
     }
     
+
+    
     def savePerfilUrls(Long perfilId,def urls){
         log.info("Id de perfil:"+perfilId+" urls: "+urls)
         def perfilInstance = Perfil.get(perfilId)

@@ -4,5 +4,10 @@ model{
     User user
 }
 
-json g.render(user,[deep:true])
+//json g.render(user,[deep:true])
+json{
+    username user.username
+    apellido user.apellido
+    nombre user.nombre  
+}
 
