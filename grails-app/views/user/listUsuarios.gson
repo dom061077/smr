@@ -5,5 +5,5 @@ model{
 }
 
 json{
-    usuarios list.collect{[id:it.id,apellido:it.apellido,username:it.username]}
+    usuarios list.collect{[id:it.id,apellido:it.apellido,nombre:it.nombre,username:it.username]}
 }
