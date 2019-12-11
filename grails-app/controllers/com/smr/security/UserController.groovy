@@ -136,6 +136,11 @@ class UserController {
         render(status: 200, contectType:'application/json',text:json)
     }
     
+    @Secured(['ROLE_USER_SAVEPERFILES'])
+    def saveperfiles(){
+        log.info("Ingresando a saveperfiles")
+        
+    }
     
     def listAuthorities(){
         log.info("Ingresando a listAuthorities")
@@ -146,6 +151,8 @@ class UserController {
     def countAuthorities(){
         continuar aqui
     }
+    
+    def listU
     
     def listUsuarios(String filter,int start, int limit){
         log.info("Ingresando a listUsuarios")

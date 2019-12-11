@@ -79,6 +79,13 @@ class PerfilController {
         render(status: 200, contectType:'application/json',text:json)
     }
     
+    def listAllPerfiles(){
+        log.info("Listado de todos los perfiles")
+        def list = Perfil.list()
+        
+        render(view:'/perfil/listAllPerfiles',model:[list:list])
+    }
+    
     def listPerfiles(String filter,int start, int limit){
         log.info('Listado de perfiles, filtro '+filter)
     	def pagingconfig = [

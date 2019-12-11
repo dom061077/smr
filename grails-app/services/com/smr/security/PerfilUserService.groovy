@@ -68,7 +68,7 @@ class PerfilUserService {
                 ngUrlInstance = NgURL.findByUrl(it.url)
                 perfilNgUrl = PerfilNgUrl.create(perfilInstance,ngUrlInstance)
                 if(!perfilNgUrl)
-                    throw new Exception("Error en carga")
+                    throw new Exception("Error en carga url")
                 return true    
             }
             
