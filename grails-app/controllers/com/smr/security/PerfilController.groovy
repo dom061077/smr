@@ -83,7 +83,7 @@ class PerfilController {
         log.info("Listado de todos los perfiles")
         def list = Perfil.list()
         
-        render(view:'/perfil/listAllPerfiles',model:[list:list])
+        render(view:'/perfil/listPerfiles',model:[list:list])
     }
     
     def listPerfiles(String filter,int start, int limit){

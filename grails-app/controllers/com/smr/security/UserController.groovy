@@ -152,7 +152,6 @@ class UserController {
         continuar aqui
     }
     
-    def listU
     
     def listUsuarios(String filter,int start, int limit){
         log.info("Ingresando a listUsuarios")
