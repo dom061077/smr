@@ -1,4 +1,5 @@
-package smr
+package com.smr.security
+
 
 import grails.gorm.transactions.Transactional
 
@@ -30,11 +31,12 @@ class UserService {
             def userPerfilInstance
             perfiles.each{
                 userPerfilInstance = null
-                perfilInstance = Perfil.findByDescripcion(it.descripcion)}
-                userPerfilInstance = UserPerfil.create(usuarioSave,perfilInstance)
-                quede aqui
+                perfilInstance = Perfil.findByDescripcion(it.descripcion)
             }
+                userPerfilInstance = UserPerfil.create(usuarioSave,perfilInstance)
+                
         }
-        
     }
+        
 }
+
