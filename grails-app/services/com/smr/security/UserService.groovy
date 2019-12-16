@@ -32,10 +32,16 @@ class UserService {
             perfiles.each{
                 userPerfilInstance = null
                 perfilInstance = Perfil.findByDescripcion(it.descripcion)
+                userPerfilInstance
             }
-                userPerfilInstance = UserPerfil.create(usuarioSave,perfilInstance)
+            userPerfilInstance = UserPerfil.create(usuarioSaved,perfilInstance)
+            if(!userPerfilInstance.perfil){
+                throw new Exception("Error en carga de perfil")
+            }
+            return usuarioSaved
                 
-        }
+        }else
+            return usuarioIntance
     }
         
 }

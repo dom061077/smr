@@ -18,6 +18,7 @@ class UserController {
     
     def springSecurityService
     def passwordEncoder
+    def userService
 	
     def getUserInformation(String userName){
         log.info("Parametros userName: "+userName)
@@ -122,13 +123,23 @@ class UserController {
     @Secured(['ROLE_USER_SAVE'])
     def save(){
         log.info("Ingresando a save: "+request.JSON)
-        def usuarioInstance = new User(request.JSON)
+        /*def usuarioInstance = new User(request.JSON)
         if(!usuarioInstance.save(flush:true)){
             if(usuarioInstance.hasErrors() && !usuarioInstance.validate()){
                 render(view:"/errors/_errors",model:[errors:usuarioInstance.errors])
                 return
             }
+        }*/
+        def usuarioInstance = new User(request.JSON)
+        def usuarioProcesado
+        try{
+            usuarioProcesado = userService.save(usuarioInstance,request.JSON.perfiles)
+            
+        }catch(Exception e){
+            log.error('Error al salvar el usuario',e)
+            usuarioInstance.errors.rejectValue('userName')
         }
+        
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build{
             success = true
