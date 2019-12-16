@@ -178,6 +178,14 @@ class UserController {
         render (view:'/user/show',model:[user:usuarioInstance])
     }
     
+    def getPerfiles(Long id){
+        log.info("Ingresando a getPerfiles: "+id)
+        def list = UserPerfil.createCriteria()list{
+            eq("user.id",id)
+        }
+        render (view:"/perfil/listPerfiles",model:[list:list])
+    }
+    
     
 }
  
