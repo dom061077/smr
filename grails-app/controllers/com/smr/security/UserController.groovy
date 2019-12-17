@@ -140,6 +140,12 @@ class UserController {
             usuarioInstance.errors.rejectValue('userName')
         }
         
+        if(usuarioIntance.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:usuarioInstance.errors])
+            return
+        }
+        
+        
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build{
             success = true
@@ -160,7 +166,7 @@ class UserController {
     }
     
     def countAuthorities(){
-        continuar aqui
+       // continuar aqui
     }
     
     

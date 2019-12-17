@@ -23,20 +23,35 @@ class UserService {
             return false
     }
     
+    private def getAuthoritiesByPerfil(Long id){
+        def list = PerfilAuthority.createCriteria.list(){
+            eq("perfil.id",id)
+        }
+        return list
+    }
+    
     def save(def usuarioInstance,def perfiles ){
         log.info("Usuario: "+usuarioInstance+" perfiles: "+perfiles)
         def usuarioSaved = usuarioInstance.save()
         if(usuarioSaved){
             def perfilInstance
+            def authorityInstance
             def userPerfilInstance
+            def userAuthorityInstance
+            def authorities
             perfiles.each{
                 userPerfilInstance = null
                 perfilInstance = Perfil.findByDescripcion(it.descripcion)
-                userPerfilInstance
-            }
-            userPerfilInstance = UserPerfil.create(usuarioSaved,perfilInstance)
-            if(!userPerfilInstance.perfil){
-                throw new Exception("Error en carga de perfil")
+            
+                userPerfilInstance = UserPerfil.create(usuarioSaved,perfilInstance)
+                authorities = getAuthoritiesByPerfil(perfilIntance.id)
+                authorities.each{
+                    userAuthorityInstance = null
+                    userAuthorityInstance = UserAuthority.create(usuarioSaved,)
+                }
+                if(!userPerfilInstance.perfil){
+                    throw new Exception("Error en carga de perfil")
+                }
             }
             return usuarioSaved
                 
