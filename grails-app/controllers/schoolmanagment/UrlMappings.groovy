@@ -35,6 +35,7 @@ class UrlMappings {
         get "/api/getuser/$id" (controller:"user",action:"show")
         post "/api/saveusuario" (controller:"user",action:"save")
         get "/api/getuserperfiles/$id" (controller:"user",action:"getPerfiles")
+        get "/api/usercount" (controller:"user",action:"count")
         //---------------LOCATIONS----------------
         
         get "/api/autocprov" (controller:"location",action:"autocompleteProvincias")

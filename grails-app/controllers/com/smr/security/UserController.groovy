@@ -137,11 +137,11 @@ class UserController {
             
         }catch(Exception e){
             log.error('Error al salvar el usuario',e)
-            usuarioInstance.errors.rejectValue('userName')
+            usuarioInstance.errors.rejectValue('username')
         }
         
-        if(usuarioIntance.hasErrors()){
-            render (view:"/errors/_errors",model:[errors:usuarioInstance.errors])
+        if(usuarioProcesado.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:usuarioProcesado.errors])
             return
         }
         
@@ -169,6 +169,23 @@ class UserController {
        // continuar aqui
     }
     
+    def count(String filter){
+        log.info("Cantidad de usuarios")
+        def totalUsuarios = 0
+        def c = Usuario.createCriteria()
+        totalUsuarios = c.count{
+            if(filter?.compareTo("")!=0){
+                or{
+                    ilike("apellido","%"+filter+"%")
+                }
+            }
+        }
+        
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build(){
+            count = totalUsuarios
+        }
+    }
     
     def listUsuarios(String filter,int start, int limit){
         log.info("Ingresando a listUsuarios")
@@ -197,9 +214,13 @@ class UserController {
     
     def getPerfiles(Long id){
         log.info("Ingresando a getPerfiles: "+id)
-        def list = UserPerfil.createCriteria()list{
+        def list = UserPerfil.createCriteria().list{
             eq("user.id",id)
         }
+        list = list.collect{
+            it.perfil
+        }
+        
         render (view:"/perfil/listPerfiles",model:[list:list])
     }
     

@@ -50,8 +50,8 @@ class UserPerfil implements Serializable {
 	}
 
 	static UserPerfil create(User user, Perfil perfil, boolean flush = false) {
-		def instance = new UserPerfil(user: user, perfil: Perfil)
-		instance.save(flush: flush)
+		def instance = new UserPerfil(user: user, perfil: perfil)
+		instance.save(flush: flush,failOnError:true)
 		instance
 	}
 
