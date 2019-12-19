@@ -172,7 +172,7 @@ class UserController {
     def count(String filter){
         log.info("Cantidad de usuarios")
         def totalUsuarios = 0
-        def c = Usuario.createCriteria()
+        def c = User.createCriteria()
         totalUsuarios = c.count{
             if(filter?.compareTo("")!=0){
                 or{
@@ -185,6 +185,7 @@ class UserController {
         def json = jsonBuilder.build(){
             count = totalUsuarios
         }
+        render(status: 200, contentType: 'application/json', text: json)
     }
     
     def listUsuarios(String filter,int start, int limit){
