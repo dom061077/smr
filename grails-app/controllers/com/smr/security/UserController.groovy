@@ -120,6 +120,27 @@ class UserController {
 
     }
     
+    @Secured(['ROLE_USER_UPDATE'])
+    def update(){
+        log.info("Ingresando a update: "+request.JSON)
+        def usuarioProcesado
+        try{
+            usuarioProcesado = userService.update(request.JSON,request.JSON.perfiles)
+        }catch(Exception e){
+            log.error("Error al modificar el usuario",e)
+            usuarioProcesado.errors.rejectValue("username","","Algún perfil no fue cargado correctamente")
+        }
+        if(usuarioProcesado.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:usuarioProcesado.errors])
+            return
+        }
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            success = true
+            id      = usuarioProcesado?.id
+        }
+    }
+    
     @Secured(['ROLE_USER_SAVE'])
     def save(){
         log.info("Ingresando a save: "+request.JSON)
