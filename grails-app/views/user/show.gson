@@ -6,6 +6,7 @@ model{
 
 //json g.render(user,[deep:true])
 json{
+    id       user?.id
     username user?.username
     apellido user?.apellido
     nombre user?.nombre  

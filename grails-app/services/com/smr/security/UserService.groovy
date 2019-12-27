@@ -37,6 +37,8 @@ class UserService {
             def userAuthorityInstance
             def authorities
             log.info("Usuario salvado: "+usuarioSaved)
+            UserPerfil.removeAll(usuarioSaved)
+            UserAuthority.removeAll(usuarioSaved)
             perfiles.each{
                 userPerfilInstance = null
                 perfilInstance = Perfil.get(it.id)
@@ -72,7 +74,12 @@ class UserService {
     def update(def usuarioParm, def perfiles){
         log.info("Id de usuario: "+usuarioParm.id)
         def usuarioInstance = User.get(usuarioParm.id)
-        usuarioIntance.properties = usuarioParm
+        if(usuarioInstance==null){
+            
+            throw new Exception("Error al recuperar el registro")
+        }
+            
+        usuarioInstance.properties = usuarioParm
         def usuarioSaved = usuarioInstance.save()
         if(usuarioSaved && !usuarioInstance.hasErrors()){
             setPerfilesAndAuthorities(usuarioSaved,perfiles)

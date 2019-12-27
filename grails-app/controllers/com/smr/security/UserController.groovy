@@ -25,8 +25,25 @@ class UserController {
         
         User usuario = User.findByUsername(userName)
         
+        List perfiles = UserPerfil.createCriteria().list{
+            eq("user.id",usuario.id)
+        }
+        List urls
+        List finalUrls
+        perfiles.each{per->
+            urls=PerfilNgUrl.createCriteria().list{
+                eq("perfil.id",per.id)
+            }
+            urls.each{url->
+                finalUrls.add(url)
+                
+            }
+            
+            
+        }
+        
          
-        [user:usuario]
+        [user:usuario,urls:finalUrls]
     }
     
     
@@ -128,7 +145,9 @@ class UserController {
             usuarioProcesado = userService.update(request.JSON,request.JSON.perfiles)
         }catch(Exception e){
             log.error("Error al modificar el usuario",e)
-            usuarioProcesado.errors.rejectValue("username","","Algún perfil no fue cargado correctamente")
+            usuarioProcesado = new User()
+            usuarioProcesado.errors.rejectValue("username","",e.message)
+            
         }
         if(usuarioProcesado.hasErrors()){
             render (view:"/errors/_errors",model:[errors:usuarioProcesado.errors])
@@ -139,6 +158,7 @@ class UserController {
             success = true
             id      = usuarioProcesado?.id
         }
+        render(status: 200, contectType:'application/json',text:json)
     }
     
     @Secured(['ROLE_USER_SAVE'])

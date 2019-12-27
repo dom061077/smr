@@ -3,6 +3,7 @@ import com.smr.security.User
 
 model{
     User user
+    List<NgURL> urls
 }
 
 //json g.render(user)
@@ -10,6 +11,7 @@ json{
     id          user?.id
     apellido    user?.apellido
     nombre      user?.nombre
-
+    urls        urls?.collect{[url:it.url]}
+    
 }
 
