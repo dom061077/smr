@@ -239,8 +239,8 @@ class UserController {
             if(filter.compareTo("")!=0){
                 or{
                     ilike("apellido",'%'+filter+'%')
-                    ilike("nombre",'%'+filtro+'%')
-                    ilike("username",'%'+filtro+'%')
+                    ilike("nombre",'%'+filter+'%')
+                    ilike("username",'%'+filter+'%')
                 }
             }
         }
