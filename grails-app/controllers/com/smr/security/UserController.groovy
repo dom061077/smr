@@ -229,7 +229,7 @@ class UserController {
         render(status: 200, contentType: 'application/json', text: json)
     }
     
-    def listUsuarios(String filter,int start, int limit){
+    def listUsuarios(String filter,int start, int limit,String sortField,String ascDesc){
         log.info("Ingresando a listUsuarios")
         def pagingconfig = [
             max: limit as Integer?:10,
