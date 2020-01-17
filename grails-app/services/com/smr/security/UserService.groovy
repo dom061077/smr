@@ -71,6 +71,20 @@ class UserService {
             return usuarioInstance
     }
     
+    def updatePassword(def id, String password){
+        log.info("Cambiar contraseña: id: "+id+", password: "+password)
+        def usuarioInstance = User.get(id)
+        if(usuarioInstance == null){
+            throw new Exception("Error al recuperar el registro")
+        }
+        usuarioInstance.password = password
+        def usuarioSaved = usuarioInstance.save()
+        if(usuarioSaved && !usuarioInstance.hasErrors()){
+            return usuarioSaved
+        }else
+            return usuarioInstance
+    }
+    
     def update(def usuarioParm, def perfiles){
         log.info("Id de usuario: "+usuarioParm.id)
         def usuarioInstance = User.get(usuarioParm.id)

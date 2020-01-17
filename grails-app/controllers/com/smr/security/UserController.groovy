@@ -62,6 +62,30 @@ class UserController {
         render(status: 200, contentType: 'application/json', text: json)
     }
     
+    def changeUserPassword(){
+        log.info("changeUserPassword, parametros "+request.JSON)
+        def usuarioProcesado
+        try{
+            usuarioProcesado = userService.updatePassword(request.JSON.id,request.JSON.password)
+        }catch(Exception e){
+            log.error("Error al modificar el usuario",e)
+            usuarioProcesado = new User()
+            usuarioProcesado.errors.rejectValue("username","",e.message)
+            
+        }
+        if(usuarioProcesado.hasErrors()){
+            render (view:"/errors/_errors",model:[errors:usuarioProcesado.errors])
+            return
+        }
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            success = true
+            id      = usuarioProcesado?.id
+        }
+        render(status: 200, contectType:'application/json',text:json)        
+    }
+    
+    @Secured(['ROLE_USER_CHANGEPASSWORD'])
     def changePassword(){
         log.info("changePassword, parametros "+request.JSON)
         
@@ -230,7 +254,9 @@ class UserController {
     }
     
     def listUsuarios(String filter,int start, int limit,String sortField,String ascDesc){
-        log.info("Ingresando a listUsuarios")
+        log.info("Ingresando a listUsuarios. Filter: "
+            +filter+" sortField: "+sortField+" ascDesc: "
+            +ascDesc+" start: "+start+" limit:"+limit)
         def pagingconfig = [
             max: limit as Integer?:10,
             offset:start as Integer?:0
@@ -242,6 +268,16 @@ class UserController {
                     ilike("nombre",'%'+filter+'%')
                     ilike("username",'%'+filter+'%')
                 }
+            }
+            if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")){
+                if(sortField.compareTo("apellidonombre")==0){
+                    order("apellido",ascDesc)
+                    order("nombre",ascDesc)
+                }else{
+                    order(sortField,ascDesc)
+                }
+                
+                
             }
         }
         render(view:'/user/listUsuarios',model:[list:list])
