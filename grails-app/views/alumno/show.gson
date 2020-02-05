@@ -1,7 +1,9 @@
 import com.smr.alumno.Alumno
+import grails.converters.JSON
 
 model{
     Alumno alumno
 }
 
 json g.render(alumno,[deep:true])
+//json{ alumno alumno.properties as JSON}

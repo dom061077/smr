@@ -62,6 +62,7 @@ class UserController {
         render(status: 200, contentType: 'application/json', text: json)
     }
     
+    @Secured(['ROLE_USER_CHANGEPASSWORD'])
     def changeUserPassword(){
         log.info("changeUserPassword, parametros "+request.JSON)
         def usuarioProcesado
@@ -85,7 +86,7 @@ class UserController {
         render(status: 200, contectType:'application/json',text:json)        
     }
     
-    @Secured(['ROLE_USER_CHANGEPASSWORD'])
+    
     def changePassword(){
         log.info("changePassword, parametros "+request.JSON)
         
@@ -115,7 +116,13 @@ class UserController {
             render (view:"/errors/_errors",model:[errors:user.errors])
             return
        }
-        user.save(flush:true)
+        user = user.save(flush:true)
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            success = true
+            id      = user?.id
+        }
+        render(status: 200, contectType:'application/json',text:json)            
         
     }
      
@@ -300,6 +307,20 @@ class UserController {
         }
         
         render (view:"/perfil/listPerfiles",model:[list:list])
+    }
+    
+    def getNgUrls(){
+        log.info("Ingresando a getNgUrls. Usuario actual: "+springSecurityService.getCurrentUser().id)
+        def detachedC=UserPerfil.where{
+            user == User.load(springSecurityService.getCurrentUser().id)
+        }
+        def listPerfiles = detachedC.list()
+        def ngUrls = PerfilNgUrl.createCriteria().list{
+            inList('perfil.id',/*detachedC.list().each{pn->
+                    return pn.perfil.id
+            }*/listPerfiles.collect(){it.perfil.id})
+        }
+        render(view:"/user/getNgUrls",model:[list:ngUrls])
     }
     
     

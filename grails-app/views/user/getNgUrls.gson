@@ -1,0 +1,7 @@
+model{
+    List<PerfilNgUrl> list
+}
+
+json{
+    ngurls list.collect{[ngurl:it.ngUrl.url]}
+}

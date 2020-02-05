@@ -18,6 +18,7 @@ class UrlMappings {
         
         get "/api/showuser" (controller:"user",action:"getUserInformation")
         put "/api/changepassword" (controller:"user",action:"changePassword")
+        put "/api/changeuserpassword" (controller:"user",action:"changeUserPassword")
         post "/api/validateoldpassword" (controller:"user",action:"oldPasswordValidation")
         get "/api/getmenu" (controller:"user",action:"listMenu")
         get "/api/getresturls" (controller:"user",action:"listAuthorities")
@@ -29,6 +30,7 @@ class UrlMappings {
         get "/api/getroles/$id" (controller:"perfil",action:"getAuthorities")
         post "/api/updateperfil/$id" (controller:"perfil",action:"update")
         get "/api/getngurls" (controller:"perfil",action:"getNgUrls")
+        get "/api/getuserngurls" (controller:"user",action:"getNgUrls")
         get "/api/getngperfilurls/$id" (controller:"perfil",action:"getNgPerfilUrls")
         post "/api/saveperfilurls" (controller:"perfil",action:"savePerfilUrls")
         get "/api/getusuarios" (controller:"user",action:"listUsuarios")

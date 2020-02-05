@@ -3,9 +3,10 @@ package com.smr.alumno
 import java.sql.Date 
 import grails.rest.*
 import grails.plugin.springsecurity.annotation.Secured
+import grails.plugins.orm.auditable.Auditable
 
 @Resource(uri='/api/alumnos',formats=['json', 'xml'])
-class Alumno {
+class Alumno implements Auditable{
     String apellido
     String nombre
     java.sql.Date fechaNacimiento

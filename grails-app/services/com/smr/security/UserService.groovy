@@ -48,7 +48,9 @@ class UserService {
                 authorities.each{pa->
                     log.info("Auth de usuario: "+pa)
                     userAuthorityInstance = null
-                    userAuthorityInstance = UserAuthority.create(usuarioSaved,pa.authority,false)
+                    log.info("Antes de crear UserAuthority")
+                    userAuthorityInstance = UserAuthority.create(usuarioSaved,pa.authority,true)
+                    log.info("Después de crear UserAuthority")
                     if(!userAuthorityInstance)
                         throw new Exception("Error en carga de role")
                 }

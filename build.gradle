@@ -67,6 +67,7 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-remote-driver:3.6.0"
     testRuntime "org.seleniumhq.selenium:selenium-api:3.6.0"
     runtime 'mysql:mysql-connector-java:6.0.5'
+    compile 'org.grails.plugins:audit-logging:3.0.5'
 }
 
 bootRun {
