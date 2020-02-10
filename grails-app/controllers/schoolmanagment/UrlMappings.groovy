@@ -52,6 +52,7 @@ class UrlMappings {
         get "/api/alumnocount" (controller:"alumno", action:"count")
         get "/api/getalumno/$id"   (controller:"alumno", action:"show")
         put "/api/updatealumno/$id" (controller:"alumno",action:"update")
+        get "/api/getalumnobydni" (controller:"alumno",action:"getalumnobydni")
         
 
         

@@ -98,6 +98,13 @@ class AlumnoController {
         render(view:'/alumno/show',model:[alumno:alumnoInstance])
     }
     
+    def getalumnobydni(int dni){
+        log.info("Parametros dni: "+dni)
+       
+        def alumnoInstance = Alumno.findByDni(dni)
+        render(view:'/alumno/show',model:[alumno:alumnoInstance])
+    }    
+    
     @Secured(['ROLE_ALUMNO_UPDATE'])
     def update(){
         log.info("Parametros update alumno "+request.JSON)
@@ -118,7 +125,7 @@ class AlumnoController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         Date date = sdf.parse(request.JSON.fechaNacimientoUnbinding)
         alumnoInstance.fechaNacimiento = new java.sql.Date(date.getTime())        
-        if(alumnoInstance.save(flush:true)){
+        if(!alumnoInstance.save(flush:true)){
             if(alumnoInstance.hasErrors() && !alumnoInstance.validate()){
                 render (view:"/errors/_errors",model:[errors:alumnoInstance.errors])
                 return                    
@@ -134,5 +141,7 @@ class AlumnoController {
         render(status: 200, contentType: 'application/json', text: json)        
         
     }
+    
+
     
 }

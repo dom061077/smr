@@ -57,7 +57,8 @@ class Alumno implements Auditable{
     
     static constraints = {
         fechaNacimiento(nullable:true, blank:true)
-        cuil(nullable:true,blank:true)
+        cuil(nullable:true,blank:true,unique:true)
+        dni (unique:true)
         cuilTutor(nullable:true,blank:true);
         telefono1(nullable:true,blank:true)
         telefono2(nullable:true,blank:true)
