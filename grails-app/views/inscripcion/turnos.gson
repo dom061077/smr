@@ -1,0 +1,10 @@
+import com.smr.inscripcion.Turno
+
+model{
+    List<Turno> list
+}
+
+json{
+    turnos list.collect{[id:it.id,nombre:it.nombre]}
+}
+

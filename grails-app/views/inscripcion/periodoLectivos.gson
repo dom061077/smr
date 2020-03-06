@@ -1,0 +1,9 @@
+import com.smr.inscripcion.PeriodoLectivo
+
+model{
+    List<PeriodoLectivo> list
+}
+
+json{
+    periodos list.collect{[id:it.id,anio:it.anio]}
+}

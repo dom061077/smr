@@ -105,6 +105,8 @@ class AlumnoController {
         render(view:'/alumno/show',model:[alumno:alumnoInstance])
     }    
     
+
+    
     @Secured(['ROLE_ALUMNO_UPDATE'])
     def update(){
         log.info("Parametros update alumno "+request.JSON)

@@ -54,6 +54,11 @@ class UrlMappings {
         put "/api/updatealumno/$id" (controller:"alumno",action:"update")
         get "/api/getalumnobydni" (controller:"alumno",action:"getalumnobydni")
         
+        //---------Incripciones--------------
+        get "/api/getperiodos" (controller:"inscripcion",action:"periodoLectivos")
+        get "/api/getturnos" (controller:"inscripcion",action:"turnos")
+        get "/api/getdvisiones" (controller:"inscripcion",action:"divisiones")
+        
 
         
     }
