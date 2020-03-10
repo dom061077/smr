@@ -1,0 +1,9 @@
+import com.smr.inscripcion.Curso
+
+model{
+    List<Curso> list
+}
+
+json{
+    cursos list.collect{[id:it.id,nombre:it.nombre]}
+}

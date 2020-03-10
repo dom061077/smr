@@ -21,15 +21,16 @@ class InscripcionController {
         
     }
     
-    def cursos(def turnoId){
+    def cursos(Long turnoId){
         def list = Curso.createCriteria().list(){
             turno{
                 eq("id",turnoId)
             }
         }
+        return [list:list]
     }
     
-    def divisiones(def cursoId, def turnoId){
+    def divisiones(Long cursoId, Long turnoId){
         def list = Division.createCriteria().list(){
             curso{
                 eq("id",cursoId)

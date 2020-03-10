@@ -1,0 +1,9 @@
+import com.smr.inscripcion.Division
+
+model{
+    List<Division> list
+}
+
+json{
+    divisiones list.collect{[id:it.id,nombre:it.nombre]}
+}

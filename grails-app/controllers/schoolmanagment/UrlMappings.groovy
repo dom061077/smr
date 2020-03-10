@@ -57,7 +57,8 @@ class UrlMappings {
         //---------Incripciones--------------
         get "/api/getperiodos" (controller:"inscripcion",action:"periodoLectivos")
         get "/api/getturnos" (controller:"inscripcion",action:"turnos")
-        get "/api/getdvisiones" (controller:"inscripcion",action:"divisiones")
+        get "/api/getdivisiones" (controller:"inscripcion",action:"divisiones")
+        get "/api/getcursos" (controller:"inscripcion",action:"cursos")
         
 
         
