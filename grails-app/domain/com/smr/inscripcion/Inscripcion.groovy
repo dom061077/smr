@@ -11,5 +11,8 @@ class Inscripcion {
     static hasMany = [detalle:DetalleInscripcion]
     
     static constraints = {
+        alumno(unique:['periodoLectivo'])
+        
+        
     }
 }
