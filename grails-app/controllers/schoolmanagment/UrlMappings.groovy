@@ -60,6 +60,8 @@ class UrlMappings {
         get "/api/getdivisiones" (controller:"inscripcion",action:"divisiones")
         get "/api/getcursos" (controller:"inscripcion",action:"cursos")
         post "/api/saveinscripcion" (controller:"inscripcion",action:"save")
+        get "/api/getinscripciones" (controller:"inscripcion",action:"listInsc")
+        get "/api/insccount" (controller:"inscripcion",action:"count")
 
         
     }

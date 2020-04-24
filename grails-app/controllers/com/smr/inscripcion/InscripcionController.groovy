@@ -73,5 +73,67 @@ class InscripcionController {
         render (status:200, contentType: 'application/json', text:json)
     }
     
+    def listInsc (String filter,int start, int limit,String sortField,String ascDesc){
+        log.info("Ingresando a listInsc. Filter: "
+            +filter+" sortField: "+sortField+" ascDesc: "
+            +ascDesc+" start: "+start+" limit:"+limit)
+        def pagingconfig = [
+            max: limit as Integer?:10,
+            offset:start as Integer?:0
+        ]
+        def list = Inscripcion.createCriteria().list(pagingconfig){
+            if(filter.compareTo("")!=0){
+                alumno{
+                    or{
+                        ilike("apellido",'%'+filter+'%')
+                        ilike("nombre",'%'+filter+'%')
+                        
+                    }
+                }
+            }
+            if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")){
+                if(sortField.compareTo("apellidonombre")==0){
+                    alumno{
+                        order("apellido",ascDesc)
+                        order("nombre",ascDesc)
+                    }
+                }else{
+                    alumno{
+                        order(sortField,ascDesc)
+                    }
+                }
+                
+                
+            }
+        }
+        render(view:'/inscripcion/listInc',model:[list:list])
+    }
+    
+    
+    def count(String filter){
+        log.info("Cantidad de inscripciones")
+        def totalInsc = 0
+        def c = Inscripcion.createCriteria()
+        totalInsc = c.count{
+            if(filter?.compareTo("")!=0){
+            if(filter.compareTo("")!=0){
+                alumno{
+                    or{
+                        ilike("apellido",'%'+filter+'%')
+                        ilike("nombre",'%'+filter+'%')
+                        
+                    }
+                }
+            }
+            }
+        }
+        
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build(){
+            count = totalInsc
+        }
+        render(status: 200, contentType: 'application/json', text: json)
+    }    
+    
     def index() { }
 }

@@ -246,9 +246,11 @@ class UserController {
         def totalUsuarios = 0
         def c = User.createCriteria()
         totalUsuarios = c.count{
-            if(filter?.compareTo("")!=0){
+            if(filter.compareTo("")!=0){
                 or{
-                    ilike("apellido","%"+filter+"%")
+                    ilike("apellido",'%'+filter+'%')
+                    ilike("nombre",'%'+filter+'%')
+                    ilike("username",'%'+filter+'%')
                 }
             }
         }
