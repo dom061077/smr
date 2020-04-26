@@ -5,6 +5,7 @@ import grails.rest.*
 import grails.converters.*
 import grails.web.JSONBuilder
 import grails.plugin.springsecurity.annotation.Secured
+import java.text.SimpleDateFormat
 
 class InscripcionController {
 	static responseFormats = ['json', 'xml']
@@ -73,7 +74,7 @@ class InscripcionController {
         render (status:200, contentType: 'application/json', text:json)
     }
     
-    def listInsc (String filter,int start, int limit,String sortField,String ascDesc){
+    def listInsc (String filterField,String filter,int start, int limit,String sortField,String ascDesc){
         log.info("Ingresando a listInsc. Filter: "
             +filter+" sortField: "+sortField+" ascDesc: "
             +ascDesc+" start: "+start+" limit:"+limit)
@@ -82,13 +83,19 @@ class InscripcionController {
             offset:start as Integer?:0
         ]
         def list = Inscripcion.createCriteria().list(pagingconfig){
-            if(filter.compareTo("")!=0){
+            if(filterField.compareTo("")!=0){
+                if(filterField.compareTo("fecha")==0 && filter.comparaTo("")!=0){
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                    Date date = sdf.parse(filter)
+                    eq("fecha",new java.sql.Date(date.getTime()))
+                }
                 alumno{
-                    or{
-                        ilike("apellido",'%'+filter+'%')
-                        ilike("nombre",'%'+filter+'%')
-                        
+                    if(filterField.compareTo("dni")==0)
+                        eq(filterField,filter)
+                    else{
+                        ilike(filterField,"%"+filter+"%")
                     }
+                        
                 }
             }
             if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")){
@@ -110,22 +117,26 @@ class InscripcionController {
     }
     
     
-    def count(String filter){
+    def count(String filterField,String filter){
         log.info("Cantidad de inscripciones")
         def totalInsc = 0
         def c = Inscripcion.createCriteria()
         totalInsc = c.count{
-            if(filter?.compareTo("")!=0){
-            if(filter.compareTo("")!=0){
+            if(filterField.compareTo("")!=0){
+                if(filterField.compareTo("fecha")==0 && filter.comparaTo("")!=0){
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                    Date date = sdf.parse(filter)
+                    eq("fecha",new java.sql.Date(date.getTime()))
+                }
                 alumno{
-                    or{
-                        ilike("apellido",'%'+filter+'%')
-                        ilike("nombre",'%'+filter+'%')
-                        
-                    }
+                    if(filterField.compareTo("dni")==0)
+                        eq(filterField,filter)
+                    else{
+                        ilike(filterField,"%"+filter+"%")
+                    }                        
                 }
             }
-            }
+            
         }
         
         JSONBuilder jsonBuilder = new JSONBuilder()
