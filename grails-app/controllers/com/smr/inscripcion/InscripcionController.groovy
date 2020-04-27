@@ -75,8 +75,8 @@ class InscripcionController {
     }
     
     def listInsc (String filterField,String filter,int start, int limit,String sortField,String ascDesc){
-        log.info("Ingresando a listInsc. Filter: "
-            +filter+" sortField: "+sortField+" ascDesc: "
+        log.info("Ingresando a listInsc. Filter Field: "+filterField
+            +" filtro: "+filter+" sortField: "+sortField+" ascDesc: "
             +ascDesc+" start: "+start+" limit:"+limit)
         def pagingconfig = [
             max: limit as Integer?:10,
@@ -84,18 +84,20 @@ class InscripcionController {
         ]
         def list = Inscripcion.createCriteria().list(pagingconfig){
             if(filterField.compareTo("")!=0){
-                if(filterField.compareTo("fecha")==0 && filter.comparaTo("")!=0){
+                if(filterField.compareTo("fecha")==0 && filter.compareTo("")!=0){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     Date date = sdf.parse(filter)
                     eq("fecha",new java.sql.Date(date.getTime()))
-                }
-                alumno{
-                    if(filterField.compareTo("dni")==0)
-                        eq(filterField,filter)
-                    else{
-                        ilike(filterField,"%"+filter+"%")
+                }else{
+                    alumno{
+                        if(filterField.compareTo("dni")==0)
+                            eq(filterField,filter)
+                        else{
+                            log.info("Sale por el else")
+                            ilike(filterField,"%"+filter+"%")
+                        }
+
                     }
-                        
                 }
             }
             if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")){
@@ -123,17 +125,18 @@ class InscripcionController {
         def c = Inscripcion.createCriteria()
         totalInsc = c.count{
             if(filterField.compareTo("")!=0){
-                if(filterField.compareTo("fecha")==0 && filter.comparaTo("")!=0){
+                if(filterField.compareTo("fecha")==0 && filter.compareTo("")!=0){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     Date date = sdf.parse(filter)
                     eq("fecha",new java.sql.Date(date.getTime()))
-                }
-                alumno{
-                    if(filterField.compareTo("dni")==0)
-                        eq(filterField,filter)
-                    else{
-                        ilike(filterField,"%"+filter+"%")
-                    }                        
+                }else{
+                    alumno{
+                        if(filterField.compareTo("dni")==0)
+                            eq(filterField,filter)
+                        else{
+                            ilike(filterField,"%"+filter+"%")
+                        }                        
+                    }
                 }
             }
             
