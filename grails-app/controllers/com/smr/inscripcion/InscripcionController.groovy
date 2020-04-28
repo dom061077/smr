@@ -84,7 +84,7 @@ class InscripcionController {
         ]
         def list = Inscripcion.createCriteria().list(pagingconfig){
             if(filterField.compareTo("")!=0){
-                if(filterField.compareTo("fecha")==0 && filter.compareTo("")!=0){
+                if(filterField.compareTo("fecha")==0 && filter!=null){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     Date date = sdf.parse(filter)
                     eq("fecha",new java.sql.Date(date.getTime()))
@@ -125,7 +125,7 @@ class InscripcionController {
         def c = Inscripcion.createCriteria()
         totalInsc = c.count{
             if(filterField.compareTo("")!=0){
-                if(filterField.compareTo("fecha")==0 && filter.compareTo("")!=0){
+                if(filterField.compareTo("fecha")==0 && filter!=null){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     Date date = sdf.parse(filter)
                     eq("fecha",new java.sql.Date(date.getTime()))
