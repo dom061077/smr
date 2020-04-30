@@ -6,9 +6,15 @@ import grails.converters.*
 import grails.web.JSONBuilder
 import grails.plugin.springsecurity.annotation.Secured
 import java.text.SimpleDateFormat
+import grails.plugins.jasper.JasperExportFormat
+import grails.plugins.jasper.JasperReportDef
+import org.apache.commons.io.FileUtils
+import java.util.Base64;
+
 
 class InscripcionController {
 	static responseFormats = ['json', 'xml']
+    def jasperService
     
     def inscripcionService
     
@@ -84,18 +90,19 @@ class InscripcionController {
         ]
         def list = Inscripcion.createCriteria().list(pagingconfig){
             if(filterField.compareTo("")!=0){
-                if(filterField.compareTo("fecha")==0 && filter!=null){
+                if(filterField.compareTo("fecha")==0 && filter!=null &&
+                       filter.compareTo("null")!=0 && filter.compareTo("")!=0){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     Date date = sdf.parse(filter)
                     eq("fecha",new java.sql.Date(date.getTime()))
                 }else{
                     alumno{
-                        if(filterField.compareTo("dni")==0)
-                            eq(filterField,filter)
-                        else{
-                            log.info("Sale por el else")
+                        if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                            eq(filterField,Integer.parseInt(filter))
+                        if(filterField.compareTo("apellido")==0 || 
+                            filterField.compareTo("nombre")==0)
                             ilike(filterField,"%"+filter+"%")
-                        }
+                        
 
                     }
                 }
@@ -125,17 +132,18 @@ class InscripcionController {
         def c = Inscripcion.createCriteria()
         totalInsc = c.count{
             if(filterField.compareTo("")!=0){
-                if(filterField.compareTo("fecha")==0 && filter!=null){
+                if(filterField.compareTo("fecha")==0 && filter!=null &&
+                    filter.compareTo("null")!=0 && filter.compareTo("")!=0){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     Date date = sdf.parse(filter)
                     eq("fecha",new java.sql.Date(date.getTime()))
                 }else{
                     alumno{
-                        if(filterField.compareTo("dni")==0)
-                            eq(filterField,filter)
-                        else{
+                        if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                            eq(filterField,Integer.parseInt(filter))
+                        if(filterField.compareTo("apellido")==0 || 
+                            filterField.compareTo("nombre")==0)
                             ilike(filterField,"%"+filter+"%")
-                        }                        
                     }
                 }
             }
@@ -148,6 +156,30 @@ class InscripcionController {
         }
         render(status: 200, contentType: 'application/json', text: json)
     }    
+    
+    def generarReporte(){
+        log.info("Controller generarReporte: "+params)
+        //def params=[]
+        def inscList = Inscripcion.list()
+        def data=[data:inscList]
+        String reportsDirPath = servletContext.getRealPath("/reports/");
+        log.info("path to dir: "+reportsDirPath)
+        JasperReportDef reportDef = jasperService.buildReportDefinition(params, request.getLocale(), data)
+        //FileUtils.writeByteArrayToFile(new File("inscripcion.pdf"), jasperService.generateReport(reportDef).toByteArray())
+        //render(status: 200, contentType: 'application/json', text: '{"reporte":"ok"}')
+        byte[] encoded = jasperService.generateReport(reportDef).toByteArray()
+        
+        Base64.Encoder enc = Base64.getEncoder();
+        byte[] strenc = enc.encode(encoded);
+        String encode = new String(strenc, "UTF-8");
+        
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build(){
+            count = encode
+        }
+        
+        render(status: 200, contentType: 'application/json', text: json)      
+    }
     
     def index() { }
 }
