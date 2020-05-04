@@ -41,14 +41,12 @@ class InscripcionController {
         return [list:list]
     }
     
-    def divisiones(Long cursoId, Long turnoId){
+    def divisiones(Long cursoId){
         def list = Division.createCriteria().list(){
             curso{
                 eq("id",cursoId)
             }
-            turno{
-                eq("id",turnoId)
-            }
+
         }
         return [list:list]
     }
@@ -157,10 +155,46 @@ class InscripcionController {
         render(status: 200, contentType: 'application/json', text: json)
     }    
     
-    def generarReporte(){
+    def generarReporte(String filterField,String filter,String sortField,String ascDesc){
         log.info("Controller generarReporte: "+params)
-        //def params=[]
-        def inscList = Inscripcion.list()
+        
+        params.put("_file","inscripcion");
+        params.put("_format","PDF")        
+        def inscList = Inscripcion.createCriteria().list(){
+            if(filterField.compareTo("")!=0){
+                if(filterField.compareTo("fecha")==0 && filter!=null &&
+                       filter.compareTo("null")!=0 && filter.compareTo("")!=0){
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                    Date date = sdf.parse(filter)
+                    eq("fecha",new java.sql.Date(date.getTime()))
+                }else{
+                    alumno{
+                        if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                            eq(filterField,Integer.parseInt(filter))
+                        if(filterField.compareTo("apellido")==0 || 
+                            filterField.compareTo("nombre")==0)
+                            ilike(filterField,"%"+filter+"%")
+                        
+
+                    }
+                }
+            }
+            if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")){
+                if(sortField.compareTo("apellidonombre")==0){
+                    alumno{
+                        order("apellido",ascDesc)
+                        order("nombre",ascDesc)
+                    }
+                }else{
+                    alumno{
+                        order(sortField,ascDesc)
+                    }
+                }
+            }
+            
+        }
+        
+        
         def data=[data:inscList]
         String reportsDirPath = servletContext.getRealPath("/reports/");
         log.info("path to dir: "+reportsDirPath)
@@ -169,16 +203,24 @@ class InscripcionController {
         //render(status: 200, contentType: 'application/json', text: '{"reporte":"ok"}')
         byte[] encoded = jasperService.generateReport(reportDef).toByteArray()
         
+
+        
         Base64.Encoder enc = Base64.getEncoder();
         byte[] strenc = enc.encode(encoded);
         String encode = new String(strenc, "UTF-8");
         
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build(){
-            count = encode
+            report = encode
         }
         
         render(status: 200, contentType: 'application/json', text: json)      
+    }
+    
+    def show(Long id){
+        log.info("Ingresando a show con id: "+id)
+        def inscInstance = Inscripcion.get(id)
+        render(view:'/inscripcion/show',model:[inscripcion:inscInstance])
     }
     
     def index() { }

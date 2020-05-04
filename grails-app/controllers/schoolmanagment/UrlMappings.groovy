@@ -63,7 +63,7 @@ class UrlMappings {
         get "/api/getinscripciones" (controller:"inscripcion",action:"listInsc")
         get "/api/insccount" (controller:"inscripcion",action:"count")
         get "/api/reporteinsc" (controller:"inscripcion",action:"generarReporte")
-
+        get "/api/getinsc/$id" (controller:"inscripcion",action:"show")
         
     }
 }
