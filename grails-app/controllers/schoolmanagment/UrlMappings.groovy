@@ -64,6 +64,10 @@ class UrlMappings {
         get "/api/insccount" (controller:"inscripcion",action:"count")
         get "/api/reporteinsc" (controller:"inscripcion",action:"generarReporte")
         get "/api/getinsc/$id" (controller:"inscripcion",action:"show")
+        put "/api/anular/$id" (controller:"inscripcion",action:"anular")
+        
+        get "/api/estudios" (controller:"inscripcion",action:"estudios")
+        
         
     }
 }

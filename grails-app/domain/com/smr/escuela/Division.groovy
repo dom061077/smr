@@ -1,4 +1,4 @@
-package com.smr.alumno
+package com.smr.escuela
 
 class Division {
     

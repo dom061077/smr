@@ -11,6 +11,7 @@ import grails.plugins.jasper.JasperReportDef
 import org.apache.commons.io.FileUtils
 import java.util.Base64;
 
+import com.smr.enums.EstudioEnum
 
 class InscripcionController {
 	static responseFormats = ['json', 'xml']
@@ -87,6 +88,7 @@ class InscripcionController {
             offset:start as Integer?:0
         ]
         def list = Inscripcion.createCriteria().list(pagingconfig){
+            eq("anulada",false)
             if(filterField.compareTo("")!=0){
                 if(filterField.compareTo("fecha")==0 && filter!=null &&
                        filter.compareTo("null")!=0 && filter.compareTo("")!=0){
@@ -129,6 +131,7 @@ class InscripcionController {
         def totalInsc = 0
         def c = Inscripcion.createCriteria()
         totalInsc = c.count{
+            eq("anulada",false)
             if(filterField.compareTo("")!=0){
                 if(filterField.compareTo("fecha")==0 && filter!=null &&
                     filter.compareTo("null")!=0 && filter.compareTo("")!=0){
@@ -161,6 +164,7 @@ class InscripcionController {
         params.put("_file","inscripcion");
         params.put("_format","PDF")        
         def inscList = Inscripcion.createCriteria().list(){
+            eq("anulada",false)
             if(filterField.compareTo("")!=0){
                 if(filterField.compareTo("fecha")==0 && filter!=null &&
                        filter.compareTo("null")!=0 && filter.compareTo("")!=0){
@@ -221,6 +225,39 @@ class InscripcionController {
         log.info("Ingresando a show con id: "+id)
         def inscInstance = Inscripcion.get(id)
         render(view:'/inscripcion/show',model:[inscripcion:inscInstance])
+    }
+    
+    def anular(Long id){
+        log.info("Ingresando a anular con id: "+id)
+        def inscProcesada
+        try{
+            inscProcesada = inscripcionService.invalidate(id)
+        }catch(Exception e){
+            log.error("Error en invalidate de service",e)
+            inscProcesada.errors.rejectValue("anulada")
+            
+        }
+        
+        if(inscProcesada.hasErrors()){
+            log.info("Errores de validacion: "+inscProcesada.errors)
+            render(view:"/errors/_errors",model:[errors:inscProcesada.errors])
+            return
+        }
+        
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            success = true
+        }
+        
+        render(status:200,contentType:'application/json', text:json)
+    }
+    
+    def estudios(){
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build{
+            estudio = EstudioEnum.list()
+        }
+        render(status:200,contentType:'application/json',text:json)
     }
     
     def index() { }

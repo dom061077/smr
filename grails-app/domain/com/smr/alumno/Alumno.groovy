@@ -4,6 +4,7 @@ import java.sql.Date
 import grails.rest.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.orm.auditable.Auditable
+import com.smr.enums.EstudioEnum
 
 @Resource(uri='/api/alumnos',formats=['json', 'xml'])
 class Alumno implements Auditable{
@@ -19,6 +20,9 @@ class Alumno implements Auditable{
     
     String apellidoTutor
     String nombreTutor
+    EstudioEnum estudioPrimarioTutor
+    EstudioEnum estudioSecundarioTutor
+    EstudioEnum estudioTerUnivTutor
     
     int dniTutor
     String cuilTutor

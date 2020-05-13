@@ -8,7 +8,7 @@ import com.smr.alumno.Alumno
 class InscripcionService {
 
     def save(Long periodoLectivoId,Long divisionId, Long alumnoId) {
-        log.info("Save in serviceXXX")
+        log.info("Save in service")
         def alumnoInstance = Alumno.load(alumnoId)
         def periodoInstance=PeriodoLectivo.load(periodoLectivoId)
         
@@ -26,6 +26,20 @@ class InscripcionService {
             return inscSavedInstance
         }else{
             log.info("Retornando after validation error: "+inscInstance)
+            return inscInstance
+        }
+    }
+    
+    def invalidate(Long id){
+        log.info("Invalidate service")
+        def inscInstance = Inscripcion.get(id)
+        inscInstance.anulada = true
+        def inscSavedInstance = inscInstance.save()
+        if(inscSavedInstance && !inscInstance.hasErrors()){
+            log.info("Retornado after save: "+inscSavedInstance)
+            return inscSavedInstance
+        }else{
+            log.info("Retornando after validation error: ")
             return inscInstance
         }
     }
