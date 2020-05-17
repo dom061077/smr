@@ -1,8 +1,8 @@
 package com.smr.enums;
 
 public enum EstudioEnum {
-	ESTUDIO_COMPLETO("COMPLETO"),
-	ESTUDIO_INCOMPLETO("INCOMPLETO")
+	ESTUDIO_COMPLETO("Completo"),
+	ESTUDIO_INCOMPLETO("Incompleto")
 	
 	
 	String name

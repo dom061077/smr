@@ -3,6 +3,6 @@ model{
 }
 
 json{
-    inscripciones list.collect{[id:it.id,apellido:it.alumno.apellido,nombre:it.alumno.nombre,periodoLectivo:it.periodoLectivo.anio]}
+    inscripciones list.collect{[id:it.id,apellido:it.alumno.apellido,nombre:it.alumno.nombre,periodoLectivo:it.periodoLectivo.anio,escuela:it.escuelaProviene?.descripcion]}
 }
 

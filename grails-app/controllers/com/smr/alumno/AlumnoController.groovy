@@ -6,6 +6,7 @@ import grails.converters.*
 import grails.web.JSONBuilder
 import java.text.SimpleDateFormat
 import grails.plugin.springsecurity.annotation.Secured
+import com.smr.enums.EstudioEnum
 
 class AlumnoController {
 	static responseFormats = ['json', 'xml']
@@ -21,7 +22,14 @@ class AlumnoController {
     @Secured(['ROLE_ALUMNO_SAVE'])
     def save(){
         log.info("Parametros de save alumno: "+request.JSON)
+        
         def alumnoInstance = new Alumno(request.JSON)
+        alumnoInstance.estudioPrimarioTutor = request.JSON.estudioPrimarioTutor_parm.code as EstudioEnum
+        alumnoInstance.estudioSecundarioTutor = request.JSON.estudioSecundarioTutor_parm.code as EstudioEnum
+        alumnoInstance.estudioTerUnivTutor = request.JSON.estudioUniversitarioTutor_parm.code as EstudioEnum
+        //alumnoInstance.estudioSecundarioTutor
+        //alumnoInstance.estudioTerUnivTutor
+        log.info("Estudio Enumeracion: "+alumnoInstance.estudioPrimarioTutor)
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         Date date = sdf.parse(request.JSON.fechaNacimientoUnbinding)
@@ -35,7 +43,7 @@ class AlumnoController {
         if (!alumnoInstance.save(flush:true)){
             if(alumnoInstance.hasErrors() && !alumnoInstance.validate()){
                 alumnoInstance.errors.each{
-                    log.debug('ERROR!!!: '+it)
+                    log.info('ERROR!!!: '+it)
                 }
                 render (view:"/errors/_errors",model:[errors:alumnoInstance.errors])
                 return            

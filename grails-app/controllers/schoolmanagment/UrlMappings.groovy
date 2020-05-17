@@ -67,6 +67,7 @@ class UrlMappings {
         put "/api/anular/$id" (controller:"inscripcion",action:"anular")
         
         get "/api/estudios" (controller:"inscripcion",action:"estudios")
+        get "/api/getescuelas" (controller:"inscripcion",action:"escuelas")
         
         
     }

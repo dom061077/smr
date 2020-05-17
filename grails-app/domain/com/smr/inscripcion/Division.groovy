@@ -1,6 +1,8 @@
 package com.smr.inscripcion
 
-class Division {
+import grails.plugins.orm.auditable.Auditable
+
+class Division implements Auditable {
     Curso curso
 
     String nombre

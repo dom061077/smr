@@ -10,6 +10,7 @@ import grails.plugins.jasper.JasperExportFormat
 import grails.plugins.jasper.JasperReportDef
 import org.apache.commons.io.FileUtils
 import java.util.Base64;
+import com.smr.escuela.Escuela
 
 import com.smr.enums.EstudioEnum
 
@@ -58,8 +59,8 @@ class InscripcionController {
         //save(Long periodoLectivoId,Long divisionId, Long alumnoId)
         def inscJson = request.JSON
         try{
-            inscProcesada=inscripcionService.save(inscJson.periodoLectivo.id
-            ,inscJson.division.id,inscJson.alumnoId)
+            inscProcesada=inscripcionService.save(request.JSON/*inscJson.periodoLectivo.id
+            ,inscJson.division.id,inscJson.alumnoId*/)
         }catch(Exception e){
             log.error("Error en save de service",e);
             inscProcesada.errors.rejectValue("periodoLectivo")
@@ -258,6 +259,11 @@ class InscripcionController {
             estudio = EstudioEnum.list()
         }
         render(status:200,contentType:'application/json',text:json)
+    }
+    
+    def escuelas(){
+        def escuelas = Escuela.list()
+        return  [list:escuelas]
     }
     
     def index() { }

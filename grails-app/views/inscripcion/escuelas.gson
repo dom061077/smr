@@ -1,0 +1,9 @@
+import com.smr.escuela.Escuela
+
+model {
+    List<Escuela>  list
+}
+
+json{
+    escuelas list.collect{[id:it.id,descripcion:it.descripcion]}
+}

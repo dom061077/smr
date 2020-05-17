@@ -7,15 +7,18 @@ import com.smr.alumno.Alumno
 @Transactional
 class InscripcionService {
 
-    def save(Long periodoLectivoId,Long divisionId, Long alumnoId) {
+    def save(def inscJson/*Long periodoLectivoId,Long divisionId, Long alumnoId*/) {
         log.info("Save in service")
-        def alumnoInstance = Alumno.load(alumnoId)
-        def periodoInstance=PeriodoLectivo.load(periodoLectivoId)
+        def alumnoInstance = Alumno.load(inscJson.alumnoId)
+        //def periodoInstance=PeriodoLectivo.load(periodoLectivoId)
         
-        def divisionInstance = Division.load(divisionId)
-        log.info("Despues de Division.load")
-        def inscInstance = new Inscripcion(alumno:alumnoInstance
-                ,periodoLectivo:periodoInstance,fecha:new Date(new java.util.Date().getTime()))
+        def divisionInstance = Division.load(inscJson.division.id)
+        //log.info("Despues de Division.load")
+        //def inscInstance = new Inscripcion(alumno:alumnoInstance
+        //        ,periodoLectivo:periodoInstance,fecha:new Date(new java.util.Date().getTime()))
+        def inscInstance = new Inscripcion(inscJson)
+        inscInstance.alumno = alumnoInstance
+        
         def detInscInstance = new DetalleInscripcion(division:divisionInstance)
         inscInstance.addToDetalle(detInscInstance)
         log.info("Antes de save")

@@ -9,6 +9,7 @@ json{
     id                  inscripcion.id
     apellido            inscripcion.alumno.apellido
     nombre              inscripcion.alumno.nombre
+    escuela             inscripcion.escuelaProviene?.descripcion
     periodoLectivo      inscripcion.periodoLectivo.anio
     fecha               inscripcion.fecha
     divisiones          inscripcion.detalle.collect{[
