@@ -100,9 +100,8 @@ class InscripcionController {
                     alumno{
                         if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
                             eq(filterField,Integer.parseInt(filter))
-                        if(filterField.compareTo("apellido")==0 || 
-                            filterField.compareTo("nombre")==0)
-                            ilike(filterField,"%"+filter+"%")
+                        if(filterField.compareTo("apellidoNombre")==0)
+                            ilike(filterField,'%'+filter+'%') 
                         
 
                     }
@@ -143,9 +142,8 @@ class InscripcionController {
                     alumno{
                         if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
                             eq(filterField,Integer.parseInt(filter))
-                        if(filterField.compareTo("apellido")==0 || 
-                            filterField.compareTo("nombre")==0)
-                            ilike(filterField,"%"+filter+"%")
+                        if(filterField.compareTo("apellidoNombre")==0)
+                            ilike(filterField,"%"+filter+"%")                    
                     }
                 }
             }

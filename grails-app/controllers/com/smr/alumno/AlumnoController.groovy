@@ -57,36 +57,43 @@ class AlumnoController {
         render(status: 200, contentType: 'application/json', text: json)        
     }
     
-    def listAlumnos(String filter,int start, int limit){
+    def listAlumnos(String filterField,String filter,int start, int limit,String sortField,String ascDesc){
         log.info('Listado de alumnos, filtro '+filter)
+        log.info('filterField: '+filterField+' filter: '+filter+' start '+start+' limit '+limit
+            +' sortField: '+sortField+' ascDesc '+ascDesc)
     	def pagingconfig = [
     		max: limit as Integer?:20,
     		offset: start as Integer?:0
     	]        
         def list = Alumno.createCriteria().list(pagingconfig){
-            if(filter.compareTo("")!=0){
-                or{
-                    ilike("apellido",'%'+filter+'%')
-                    ilike("nombre",'%'+filter+'%')
-                }
+            if(filterField.compareTo("")!=0){
+                    
+                        if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                            eq(filterField,Integer.parseInt(filter))
+                        if(filterField.compareTo("apellidoNombre")==0)
+                            ilike(filterField,"%"+filter+"%")                    
+                    
                 
             }
             
-        }
+        }    
+       
         render(view:'/alumno/listAlumnos',model:[list:list])
     }
     
-    def count(String filter){
+    def count(String filterField,String filter){
         log.info('Cantidad de alumnos ')
         int totalAlumnos =0
         
         def c = Alumno.createCriteria()
         totalAlumnos = c.count{
-            if(filter?.compareTo("")!=0){
-                or{
-                    ilike("apellido",'%'+filter+'%')
-                    ilike("nombre",'%'+filter+'%')
-                }
+            if(filterField.compareTo("")!=0){
+                    
+                        if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                            eq(filterField,Integer.parseInt(filter))
+                        if(filterField.compareTo("apellidoNombre")==0)
+                            ilike(filterField,"%"+filter+"%")                    
+                    
                 
             }
         }

@@ -10,6 +10,7 @@ import com.smr.enums.EstudioEnum
 class Alumno implements Auditable{
     String apellido
     String nombre
+    String apellidoNombre
     java.sql.Date fechaNacimiento
 
     int dni
@@ -53,11 +54,12 @@ class Alumno implements Auditable{
         return fechaNacimiento;
     }
     
-    String getApellidoNombre(){
-        return apellido+' '+nombre
-    }
+
+    def beforeValidate() {
+        this.apellidoNombre = this.apellido+" "+this.nombre
+    }    
     
-    static transients = ['fechaNacimientoUnbinding','apellidoNombre']
+    static transients = ['fechaNacimientoUnbinding']
     
     static constraints = {
         fechaNacimiento(nullable:true, blank:true)
