@@ -68,7 +68,7 @@ class UrlMappings {
         
         get "/api/estudios" (controller:"inscripcion",action:"estudios")
         get "/api/getescuelas" (controller:"inscripcion",action:"escuelas")
-        
+        post "/api/inscexportxls" (controller:'inscripcion',action:'exportExcel')
         
     }
 }

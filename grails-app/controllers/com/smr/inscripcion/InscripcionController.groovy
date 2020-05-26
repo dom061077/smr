@@ -6,13 +6,23 @@ import grails.converters.*
 import grails.web.JSONBuilder
 import grails.plugin.springsecurity.annotation.Secured
 import java.text.SimpleDateFormat
-import grails.plugins.jasper.JasperExportFormat
+import grails.plugins.jasper.JasperExportFormat 
 import grails.plugins.jasper.JasperReportDef
 import org.apache.commons.io.FileUtils
 import java.util.Base64;
 import com.smr.escuela.Escuela
+import com.smr.alumno.Alumno
 
 import com.smr.enums.EstudioEnum
+
+
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.io.ByteArrayOutputStream
+import com.smr.utils.Utils
+import org.grails.core.DefaultGrailsDomainClass
+
 
 class InscripcionController {
 	static responseFormats = ['json', 'xml']
@@ -216,8 +226,68 @@ class InscripcionController {
         def json = jsonBuilder.build(){
             report = encode
         }
+         
+        render(status: 200, contentType: 'application/json', text: json)      
+    }
+      
+    
+    def exportExcel(String filterField,String filter,String sortField,String ascDesc
+                    ){
+        log.info('Ingresando a exportExcel, columns: '+request.JSON)
+        //log.info(columns.toString())
+        /*String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
+        
+        Workbook workbook = new XSSFWorkbook();        
+        
+       CreationHelper createHelper = workbook.getCreationHelper();
+
+        // Create a Sheet
+        Sheet sheet = workbook.createSheet("Employee");    
+        
+        Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 14);
+        headerFont.setColor(IndexedColors.RED.getIndex());
+
+        // Create a CellStyle with the font
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        headerCellStyle.setFont(headerFont);
+
+        // Create a Row
+        Row headerRow = sheet.createRow(0);       
+        
+       for(int i = 0; i < columns.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(columns[i]);
+            cell.setCellStyle(headerCellStyle);
+        }         
+        
+
+        
+        
+        
+        ByteArrayOutputStream arrayByte = new ByteArrayOutputStream();
+        workbook.write(arrayByte);
+        //workbook.write(encodedByte)
+        //fileOut.close();
+        workbook.close();
+        byte[] encodedByte = arrayByte.toByteArray()
+        
+        
+        Base64.Encoder enc = Base64.getEncoder();
+        byte[] strenc = enc.encode(encodedByte);
+        String encode = new String(strenc, "UTF-8");
+        */
+        
+        String encode=Utils.exportarxls(["APELLIDO","NOMBRE","FECHA"],["apellido","nombre","fecha"],Alumno.list())
+        
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build(){
+            report = encode
+        }
         
         render(status: 200, contentType: 'application/json', text: json)      
+        
     }
     
     def show(Long id){

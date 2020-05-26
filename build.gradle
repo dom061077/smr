@@ -69,6 +69,10 @@ dependencies {
     runtime 'mysql:mysql-connector-java:6.0.5'
     compile 'org.grails.plugins:audit-logging:3.0.5'
     compile "org.grails.plugins:jasper:2.1.0"
+    //compile fileTree(dir: './lib', include: ['*.jar'])
+
+    compile "org.apache.poi:poi:3.17"	     // For `.xls` files
+    compile "org.apache.poi:poi-ooxml:3.17"	 // For `.xlsx` files
 }
 
 bootRun {
