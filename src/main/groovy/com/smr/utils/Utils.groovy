@@ -7,6 +7,21 @@ import java.io.ByteArrayOutputStream
 import org.grails.core.DefaultGrailsDomainClass
 
 class Utils{
+    private static def formatValue(def value){
+        if(value instanceof)
+    }
+    
+    private static def getPropertyValue(String propertyName,def obj){
+        String[] fields = propertyName.split("\\.")
+        if(fields.length==1){
+            
+            
+            return obj?.getPersistentValue(propertyName);
+        }
+        String nextField = propertyName.substring(propertyName.indexOf(".")+1);
+        return getPropertyValue(nextField,obj?.getPersistentValue(fields[0]))
+    }
+    
     static String exportarxls(List columns,List propertyNames,List data){
         //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
         
@@ -46,8 +61,12 @@ class Utils{
             for(int k = 0;k < propertyNames.size();k++){
                 Cell cell = row.createCell(k)
                 //DefaultGrailsDomainClass domainClass = ((DefaultGrailsDomainClass)data[i])
-                cell.setCellValue((data[i]).getPersistentValue(propertyNames[k]).toString());
+                //cell.setCellValue((data[i]).getPersistentValue(propertyNames[k]).toString());
+                def fieldValue=getPropertyValue(propertyNames[k],data[i]);
+                if(fieldValue instanceof java.sql.Date)
+                    fieldValue = fieldValue.toString();
                 
+                cell.setCellValue(fieldValue);
                 
                 cell.setCellStyle(rowCellStyle);
             }

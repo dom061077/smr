@@ -279,7 +279,8 @@ class InscripcionController {
         String encode = new String(strenc, "UTF-8");
         */
         
-        String encode=Utils.exportarxls(["APELLIDO","NOMBRE","FECHA"],["apellido","nombre","fecha"],Alumno.list())
+        String encode=Utils.exportarxls(["APELLIDO","NOMBRE","FECHA INSCRIPCION"]
+            ,["alumno.apellido","alumno.nombre","fecha"],Inscripcion.list())
         
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build(){
