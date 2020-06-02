@@ -4,6 +4,7 @@ import com.smr.alumno.Alumno
 
 import com.smr.escuela.Escuela
 import grails.plugins.orm.auditable.Auditable
+import com.smr.academico.Examen
 
 
 class Inscripcion implements Auditable{
@@ -19,7 +20,7 @@ class Inscripcion implements Auditable{
     
     
     
-    static hasMany = [detalle:DetalleInscripcion]
+    static hasMany = [detalle:DetalleInscripcion,examenes:Examen]
     
     static constraints = {
         alumno(validator:{val,obj->

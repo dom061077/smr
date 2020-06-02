@@ -5,10 +5,17 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.ByteArrayOutputStream
 import org.grails.core.DefaultGrailsDomainClass
+import java.text.SimpleDateFormat
 
 class Utils{
     private static def formatValue(def value){
-        if(value instanceof)
+        if(value instanceof java.sql.Date){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy")
+            return sdf.format(value)
+        }
+        
+        return value
+            
     }
     
     private static def getPropertyValue(String propertyName,def obj){
@@ -63,8 +70,7 @@ class Utils{
                 //DefaultGrailsDomainClass domainClass = ((DefaultGrailsDomainClass)data[i])
                 //cell.setCellValue((data[i]).getPersistentValue(propertyNames[k]).toString());
                 def fieldValue=getPropertyValue(propertyNames[k],data[i]);
-                if(fieldValue instanceof java.sql.Date)
-                    fieldValue = fieldValue.toString();
+                fieldValue = formatValue(fieldValue)
                 
                 cell.setCellValue(fieldValue);
                 

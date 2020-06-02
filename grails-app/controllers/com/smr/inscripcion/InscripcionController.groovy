@@ -112,9 +112,15 @@ class InscripcionController {
                             eq(filterField,Integer.parseInt(filter))
                         if(filterField.compareTo("apellidoNombre")==0)
                             ilike(filterField,'%'+filter+'%') 
-                        
-
                     }
+                    if(filterField.compareTo("periodoLectivo")==0 && 
+                            filter.compareTo("")!=0)    
+                        periodoLectivo{
+                            eq("anio",Integer.parseInt(filter))
+                        }
+
+                        
+                    
                 }
             }
             if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")){
@@ -155,6 +161,12 @@ class InscripcionController {
                         if(filterField.compareTo("apellidoNombre")==0)
                             ilike(filterField,"%"+filter+"%")                    
                     }
+                    if(filterField.compareTo("periodoLectivo")==0
+                        && filter.compareTo("")!=0)    
+                        periodoLectivo{
+                            eq("anio",Integer.parseInt(filter))
+                        }
+                    
                 }
             }
             
@@ -167,33 +179,34 @@ class InscripcionController {
         render(status: 200, contentType: 'application/json', text: json)
     }    
     
-    def generarReporte(String filterField,String filter,String sortField,String ascDesc){
-        log.info("Controller generarReporte: "+params)
-        
-        params.put("_file","inscripcion");
-        params.put("_format","PDF")        
-        def inscList = Inscripcion.createCriteria().list(){
+    
+    private List getListReporte(String filterField,String filter,String sortField,String ascDesc){
+        def dataList = Inscripcion.createCriteria().list(){
             eq("anulada",false)
-            if(filterField.compareTo("")!=0){
-                if(filterField.compareTo("fecha")==0 && filter!=null &&
-                       filter.compareTo("null")!=0 && filter.compareTo("")!=0){
+            if(filterField?.compareTo("")!=0){
+                if(filterField?.compareTo("fecha")==0 && filter!=null &&
+                       filter?.compareTo("null")!=0 && filter?.compareTo("")!=0){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                     Date date = sdf.parse(filter)
                     eq("fecha",new java.sql.Date(date.getTime()))
                 }else{
                     alumno{
-                        if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                        if(filterField?.compareTo("dni")==0 && filter?.compareTo("")!=0)
                             eq(filterField,Integer.parseInt(filter))
-                        if(filterField.compareTo("apellido")==0 || 
-                            filterField.compareTo("nombre")==0)
+                        if(filterField?.compareTo("apellidoNombre")==0)
                             ilike(filterField,"%"+filter+"%")
-                        
-
                     }
+                    
                 }
+                if(filterField?.compareTo("periodoLectivo")==0
+                        && filter?.compareTo("")!=0)    
+                        periodoLectivo{
+                            eq("anio",Integer.parseInt(filter))
+                        }
+                
             }
-            if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")){
-                if(sortField.compareTo("apellidonombre")==0){
+            if(sortField?.compareTo("")!=0 && sortField?.compareTo("undefined")!=0){
+                if(sortField?.compareTo("apellidonombre")==0){
                     alumno{
                         order("apellido",ascDesc)
                         order("nombre",ascDesc)
@@ -206,8 +219,16 @@ class InscripcionController {
             }
             
         }
+        return dataList
+    }
+    
+    def generarReporte(String filterField,String filter,String sortField,String ascDesc){
+        log.info("Controller generarReporte: "+params)
         
+        params.put("_file","inscripcion");
+        params.put("_format","PDF")        
         
+        def inscList=getListReporte( filterField, filter, sortField, ascDesc)
         def data=[data:inscList]
         String reportsDirPath = servletContext.getRealPath("/reports/");
         log.info("path to dir: "+reportsDirPath)
@@ -231,9 +252,9 @@ class InscripcionController {
     }
       
     
-    def exportExcel(String filterField,String filter,String sortField,String ascDesc
-                    ){
-        log.info('Ingresando a exportExcel, columns: '+request.JSON)
+    def exportExcel( ){
+        log.info('Ingresando a exportExcel, columns en formato JSON: '+request.JSON)
+        def jParams = request.JSON
         //log.info(columns.toString())
         /*String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
         
@@ -278,9 +299,9 @@ class InscripcionController {
         byte[] strenc = enc.encode(encodedByte);
         String encode = new String(strenc, "UTF-8");
         */
-        
-        String encode=Utils.exportarxls(["APELLIDO","NOMBRE","FECHA INSCRIPCION"]
-            ,["alumno.apellido","alumno.nombre","fecha"],Inscripcion.list())
+        def alumnoList=getListReporte( jParams.filterField, jParams.filter, jParams.sortField, jParams.ascDesc)
+        String encode=Utils.exportarxls(["APELLIDO","NOMBRE","FECHA INSCRIPCION","PERIODO LECTIVO"]
+            ,["alumno.apellido","alumno.nombre","fecha","periodoLectivo.anio"],alumnoList)
         
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build(){
