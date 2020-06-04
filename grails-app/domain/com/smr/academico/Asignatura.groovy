@@ -5,11 +5,12 @@ import com.smr.inscripcion.Curso
 class Asignatura {
     String descripcion
     
-    Curso curso
+    
     
     static constraints = {
         descripcion(blank:false,nullable:false)
     }
     
-    static belongsTo = [curso:Curso]
+    static belongsTo = Curso
+    static hasMany = [cursos:Curso]
 }

@@ -10,3 +10,4 @@ out/
 .project
 .settings
 .classpath
+/hs_err_pid7232.log

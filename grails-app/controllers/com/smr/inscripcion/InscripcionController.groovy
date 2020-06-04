@@ -45,15 +45,17 @@ class InscripcionController {
     }
     
     def cursos(Long turnoId){
-        def list = Curso.createCriteria().list(){
-            turno{
-                eq("id",turnoId)
+        def list = Curso.withCriteria(){
+            turnos{
+                eq('id',turnoId)
             }
+            order("nombre","asc")
         }
+        
         return [list:list]
     }
     
-    def divisiones(Long cursoId){
+    def divisiones(Long cursoId,Long turnoId){
         def list = Division.createCriteria().list(){
             curso{
                 eq("id",cursoId)
