@@ -12,14 +12,14 @@ class InscripcionService {
         def alumnoInstance = Alumno.load(inscJson.alumnoId)
         //def periodoInstance=PeriodoLectivo.load(periodoLectivoId)
         
-        def divisionInstance = Division.load(inscJson.division.id)
+        def tcDivisionInstance = TurnoCursoDivision.load(inscJson.division.id)
         //log.info("Despues de Division.load")
         //def inscInstance = new Inscripcion(alumno:alumnoInstance
         //        ,periodoLectivo:periodoInstance,fecha:new Date(new java.util.Date().getTime()))
         def inscInstance = new Inscripcion(inscJson)
         inscInstance.alumno = alumnoInstance
         
-        def detInscInstance = new DetalleInscripcion(division:divisionInstance)
+        def detInscInstance = new DetalleInscripcion(tcDivision:tcDivisionInstance)
         inscInstance.addToDetalle(detInscInstance)
         log.info("Antes de save")
         def inscSavedInstance = inscInstance.save()

@@ -23,10 +23,12 @@ class Utils{
         if(fields.length==1){
             
             
-            return obj?.getPersistentValue(propertyName);
+            //return obj?.getPersistentValue(propertyName);
+            return obj?."${propertyName}"
         }
         String nextField = propertyName.substring(propertyName.indexOf(".")+1);
-        return getPropertyValue(nextField,obj?.getPersistentValue(fields[0]))
+        //return getPropertyValue(nextField,obj?.getPersistentValue(fields[0]))
+        return getPropertyValue(nextField,obj?."${fields[0]}")
     }
     
     static String exportarxls(List columns,List propertyNames,List data){

@@ -7,6 +7,7 @@
 	<field name="fecha" class="java.sql.Date"/>
 	<field name="alumno.apellido" class="java.lang.String"/>
 	<field name="alumno.nombre" class="java.lang.String"/>
+	<field name="detalleInsc" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -27,40 +28,48 @@
 	<columnHeader>
 		<band height="61" splitType="Stretch">
 			<staticText>
-				<reportElement x="29" y="33" width="100" height="20" uuid="25a99c46-3fac-4418-97cf-8ca272705014"/>
+				<reportElement x="0" y="29" width="100" height="20" uuid="25a99c46-3fac-4418-97cf-8ca272705014"/>
 				<text><![CDATA[Id]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="151" y="33" width="100" height="20" uuid="174be8d3-f0d6-4697-9899-248b55546a5c"/>
+				<reportElement x="112" y="29" width="100" height="20" uuid="174be8d3-f0d6-4697-9899-248b55546a5c"/>
 				<text><![CDATA[Fecha]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="286" y="32" width="100" height="20" uuid="24152351-988c-4d93-9a98-d54a4f8a1111"/>
+				<reportElement x="229" y="29" width="100" height="20" uuid="24152351-988c-4d93-9a98-d54a4f8a1111"/>
 				<text><![CDATA[Apellido]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="418" y="33" width="100" height="20" uuid="824e2f64-680e-4ef8-96dd-9e0a850855f9"/>
+				<reportElement x="344" y="29" width="100" height="20" uuid="824e2f64-680e-4ef8-96dd-9e0a850855f9"/>
 				<text><![CDATA[Nombre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="455" y="29" width="100" height="20" uuid="dc6e0c53-39ae-4a45-80bc-b83798dd7c58"/>
+				<text><![CDATA[detalleInsc]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="25" splitType="Stretch">
 			<textField>
-				<reportElement x="29" y="5" width="100" height="20" uuid="6ecf6ba8-3d82-4a1c-a8e7-261139867ae4"/>
+				<reportElement x="0" y="1" width="100" height="20" uuid="6ecf6ba8-3d82-4a1c-a8e7-261139867ae4"/>
 				<textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="151" y="5" width="100" height="20" uuid="8d25bb75-76e2-4356-8175-473ca2a3c755"/>
+				<reportElement x="112" y="1" width="100" height="20" uuid="8d25bb75-76e2-4356-8175-473ca2a3c755"/>
 				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="286" y="5" width="100" height="20" uuid="98963544-2f9f-4a43-a6a2-fb32abf97316"/>
+				<reportElement x="229" y="2" width="100" height="20" uuid="98963544-2f9f-4a43-a6a2-fb32abf97316"/>
 				<textFieldExpression><![CDATA[$F{alumno.apellido}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="418" y="5" width="100" height="20" uuid="e3fec04d-14ec-4a69-9b66-0eff7d2414e9"/>
+				<reportElement x="344" y="1" width="100" height="20" uuid="e3fec04d-14ec-4a69-9b66-0eff7d2414e9"/>
 				<textFieldExpression><![CDATA[$F{alumno.nombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="455" y="5" width="100" height="20" uuid="b32c1f89-6dc3-412d-806c-e04286eed938"/>
+				<textFieldExpression><![CDATA[$F{detalleInsc}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

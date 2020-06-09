@@ -11,16 +11,26 @@ class Inscripcion implements Auditable{
     Alumno alumno
     PeriodoLectivo periodoLectivo
     java.sql.Date fecha = new java.sql.Date(new java.util.Date().getTime())
+    String detalleInsc
 
     boolean anulada=false
     
     Escuela escuelaProviene
 
-    
+    String getDetalleInsc(){
+        String detStr=''
+        
+        this.detalle.each{
+            detStr = it.tcDivision.curso.nombre+'-'+it.tcDivision.division.nombre+'-'+it.tcDivision.turno.nombre
+        }
+        return detStr
+    }
     
     
     
     static hasMany = [detalle:DetalleInscripcion,examenes:Examen]
+    
+    static transients = ['detalleInsc']
     
     static constraints = {
         alumno(validator:{val,obj->

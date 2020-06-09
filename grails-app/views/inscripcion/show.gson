@@ -13,7 +13,7 @@ json{
     periodoLectivo      inscripcion.periodoLectivo.anio
     fecha               inscripcion.fecha
     divisiones          inscripcion.detalle.collect{[
-                            turno:it.division.curso.turno.nombre
-                            ,curso:it.division.curso.nombre
-                            ,division:it.division.nombre]}
+                            turno:it.tcDivision.turno.nombre
+                            ,curso:it.tcDivision.curso.nombre
+                            ,division:it.tcDivision.division.nombre]}
 }

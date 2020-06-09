@@ -1,9 +1,9 @@
-import com.smr.inscripcion.Division
+import com.smr.inscripcion.TurnoCursoDivision
 
 model{
-    List<Division> list
+    List<TurnoCursoDivision> list
 }
 
 json{
-    divisiones list.collect{[id:it.id,nombre:it.nombre]}
+    divisiones list.collect{[id:it.id,nombre:it.division.nombre]}
 }

@@ -56,11 +56,9 @@ class InscripcionController {
     }
     
     def divisiones(Long cursoId,Long turnoId){
-        def list = Division.createCriteria().list(){
-            curso{
-                eq("id",cursoId)
-            }
-
+        log.info("Ingresando a divisiones: "+cursoId+"-"+turnoId)
+        def list = TurnoCursoDivision.all.findAll{
+            it.curso.id == cursoId &&  it.turno.id == turnoId
         }
         return [list:list]
     }
@@ -185,7 +183,7 @@ class InscripcionController {
     private List getListReporte(String filterField,String filter,String sortField,String ascDesc){
         def dataList = Inscripcion.createCriteria().list(){
             eq("anulada",false)
-            if(filterField?.compareTo("")!=0){
+            if(filterField?.compareTo("")!=0 && filterField?.compareTo("null")!=0){
                 if(filterField?.compareTo("fecha")==0 && filter!=null &&
                        filter?.compareTo("null")!=0 && filter?.compareTo("")!=0){
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
@@ -207,7 +205,7 @@ class InscripcionController {
                         }
                 
             }
-            if(sortField?.compareTo("")!=0 && sortField?.compareTo("undefined")!=0){
+            /*if(sortField?.compareTo("")!=0 && sortField?.compareTo("undefined")!=0 && filterField?.compareTo("null")!=0){
                 if(sortField?.compareTo("apellidonombre")==0){
                     alumno{
                         order("apellido",ascDesc)
@@ -218,8 +216,12 @@ class InscripcionController {
                         order(sortField,ascDesc)
                     }
                 }
-            }
+            }*/
             
+        }
+        def detalleInsc="detalleInsc"
+        dataList.each{
+            log.info("detalle de inscripcion: "+it."${detalleInsc}")
         }
         return dataList
     }
@@ -301,9 +303,12 @@ class InscripcionController {
         byte[] strenc = enc.encode(encodedByte);
         String encode = new String(strenc, "UTF-8");
         */
+        log.info("fielterField: "+jParams.filterField)
         def alumnoList=getListReporte( jParams.filterField, jParams.filter, jParams.sortField, jParams.ascDesc)
-        String encode=Utils.exportarxls(["APELLIDO","NOMBRE","FECHA INSCRIPCION","PERIODO LECTIVO"]
-            ,["alumno.apellido","alumno.nombre","fecha","periodoLectivo.anio"],alumnoList)
+        String encode
+        if(alumnoList.size()>0)
+          encode=Utils.exportarxls(["APELLIDO","NOMBRE","FECHA INSCRIPCION","PERIODO LECTIVO","DETALLE INSCRIPCION"]
+                ,["alumno.apellido","alumno.nombre","fecha","periodoLectivo.anio","detalleInsc"],alumnoList)
         
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build(){
