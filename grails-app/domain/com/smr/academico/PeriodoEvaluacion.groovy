@@ -1,15 +1,20 @@
 package com.smr.academico
 
+import com.smr.inscripcion.PeriodoLectivo
+
+
 class PeriodoEvaluacion {
-    TipoPeriodoEvaluacion tipoPeriodoEval
+    TipoPeriodoEvaluacion tipoPeriodoEval/*indica si es trimestral o cuatrimestral*/
+    PeriodoLectivo periodoLectivo
+    String descripcion 
+    
+    int cantClases=0
     
     
-    int cantClases
+    static belongsTo = [tipoPeriodoEval: TipoPeriodoEvaluacion
+            ,periodoLectivo:PeriodoLectivo]
     
-    
-    static belongsTo = [tipoPeriodoEval: TipoPeriodoEvaluacion]
-    
-    static hasMany = [examenes:Examen]
+    static hasMany = [examenes:Examen,configExamenes:ConfiguracionExamenesDetalle]
     
     static constraints = {
     }

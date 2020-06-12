@@ -5,6 +5,7 @@ import com.smr.alumno.Alumno
 import com.smr.escuela.Escuela
 import grails.plugins.orm.auditable.Auditable
 import com.smr.academico.Examen
+import com.smr.enums.CondicionEnum
 
 
 class Inscripcion implements Auditable{
@@ -12,6 +13,7 @@ class Inscripcion implements Auditable{
     PeriodoLectivo periodoLectivo
     java.sql.Date fecha = new java.sql.Date(new java.util.Date().getTime())
     String detalleInsc
+    CondicionEnum condicion
 
     boolean anulada=false
     
