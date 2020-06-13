@@ -12,10 +12,11 @@ class Examen {
     
     Asignatura asignatura
     
-    
+    Inscripcion inscripcion
     
     
     static belongsTo = [tipoExamen:TipoExamen,periodoEval:PeriodoEvaluacion
+                        ,inscripcion:Inscripcion
                        ]
     
     

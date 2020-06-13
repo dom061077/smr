@@ -32,9 +32,9 @@ class InscripcionService {
                         }
                         log.info("Después del return comparando curso")
                         if (add){
-                            new Examen(descripcion:tipoExamen.descripcion
+                            new Examen(descripcion:i+'°'+tipoExamen.descripcion
                                 ,tipoExamen:tipoExamen,periodoEval:pe
-                                ,asignatura:a).save()
+                                ,asignatura:a,inscripcion:insc).save()
                         }
                     }
                 }

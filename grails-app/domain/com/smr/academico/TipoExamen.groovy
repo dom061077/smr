@@ -6,6 +6,9 @@ class TipoExamen {
     
     boolean complementario=false
     
+    int ordenCompendio
+    
     static constraints = {
+        ordenCompendio(nullable:true, blank:true)
     }
 }
