@@ -2,6 +2,7 @@ package com.smr.security
 
 
 import grails.gorm.transactions.Transactional
+import java.text.SimpleDateFormat
 
 @Transactional
 class UserService {
@@ -94,7 +95,11 @@ class UserService {
             
             throw new Exception("Error al recuperar el registro")
         }
-            
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        Date date = sdf.parse(usuarioParm.fechaNacimientoUnbinding)
+        
+        usuarioInstance.fechaNacimiento = new java.sql.Date(date.getTime())
+        
         usuarioInstance.properties = usuarioParm
         def usuarioSaved = usuarioInstance.save()
         if(usuarioSaved && !usuarioInstance.hasErrors()){

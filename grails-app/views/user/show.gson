@@ -10,5 +10,8 @@ json{
     username user?.username
     apellido user?.apellido
     nombre user?.nombre  
+    dni    user?.dni
+    fechaNacimiento user?.fechaNacimiento
+    domicilio   user?.domicilio
 }
 

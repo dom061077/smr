@@ -6,6 +6,8 @@ import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import static org.springframework.http.HttpStatus.*
 import grails.web.JSONBuilder
+import java.text.SimpleDateFormat
+
 
 
 import org.springframework.beans.factory.annotation.Autowired
@@ -203,6 +205,13 @@ class UserController {
             }
         }*/
         def usuarioInstance = new User(request.JSON)
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+        Date date = sdf.parse(request.JSON.fechaNacimientoUnbinding)
+        
+        usuarioInstance.fechaNacimiento = new java.sql.Date(date.getTime())
+        
+        
         def usuarioProcesado
         try{
             usuarioProcesado = userService.save(usuarioInstance,request.JSON.perfiles)

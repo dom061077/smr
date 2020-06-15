@@ -23,6 +23,9 @@ class User implements Serializable {
     String apellido
     String nombre
     
+    Integer dni
+    String domicilio
+    java.sql.Date fechaNacimiento
     
 
     Set<Authority> getAuthorities() {
@@ -34,6 +37,9 @@ class User implements Serializable {
         username nullable: false, blank: false, unique: true
         apellido nullable: true, blank: true
         nombre nullable: true, blank:true
+        dni nullable: true, blank: true
+        domicilio nullable: true, blank: true
+        fechaNacimiento nullable: true, blank: true
     }
 
     
