@@ -1,0 +1,8 @@
+
+model{
+    List<Asignatura> list
+}
+
+json{
+    asignaturas list.collect{[id:it.id,descripcion:it.descripcion]}
+}

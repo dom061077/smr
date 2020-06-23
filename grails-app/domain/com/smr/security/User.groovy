@@ -3,6 +3,7 @@ package com.smr.security
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import grails.compiler.GrailsCompileStatic
+import com.smr.academico.Asignatura
 
 @GrailsCompileStatic
 @EqualsAndHashCode(includes='username')
@@ -31,6 +32,8 @@ class User implements Serializable {
     Set<Authority> getAuthorities() {
         (UserAuthority.findAllByUser(this) as List<UserAuthority>)*.authority as Set<Authority>
     }
+    
+    static hasMany = [asignaturas:Asignatura]
 
     static constraints = {
         password nullable: false, blank: false, password: true

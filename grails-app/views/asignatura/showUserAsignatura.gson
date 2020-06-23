@@ -1,0 +1,13 @@
+import com.smr.security.User
+
+model{
+    User user
+}
+
+json{
+    id          user?.id
+    apellido    user?.apellido
+    nombre      user?.nombre
+    asignaturas user?.asignaturas?.collect{[id:it.id,descripcion:it.descripcion]}
+    
+}

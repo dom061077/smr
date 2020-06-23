@@ -70,5 +70,10 @@ class UrlMappings {
         get "/api/getescuelas" (controller:"inscripcion",action:"escuelas")
         post "/api/inscexportxls" (controller:'inscripcion',action:'exportExcel')
         
+        //------------Asignaturas---------------------------
+        get "/api/getasignaturas" (controller:"asignatura",action:"getAsignaturas")
+        post "/api/linkasignaturasusers" (controller:"asignatura",action:"saveAsignaturaUser")
+        get "/api/showuserasignaturas/$id" (controller:"asignatura",action:"showUserAsignaturas")
+        
     }
 }
