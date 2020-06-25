@@ -19,22 +19,22 @@ class AsignaturaController {
     }
     
     def saveAsignaturaUser( ){
-        log.info("Ingresando a saveAsignaturaUser. userId: "+request.JSON.userId+" asignaturasJson "+request.JSON)
+        log.info("Ingresando a saveAsignaturaUser. userId: "+request.JSON.id+" asignaturasJson "+request.JSON)
         def userProcesado
         JSONBuilder jsonBuilder = new JSONBuilder()
         def json = jsonBuilder.build{
             success = true
         }
         try{
-            asignaturaService.saveUserAsignatura(request.JSON)
+            userProcesado=asignaturaService.saveUserAsignatura(request.JSON)
         }catch(Exception e){
             log.error("Error al modificar el usuario",e)
             userProcesado = new User()
-            usuarioProcesado.errors.rejectValue("asignaturas","",e.message)
+            userProcesado.errors.rejectValue("apellido","",e.message)
             
         }
         if(userProcesado.hasErrors()){
-            render (view:"/errors/_errors",model:[errors:usuarioProcesado.errors])
+            render (view:"/errors/_errors",model:[errors:userProcesado.errors])
             return           
         }
         render(status: 200, contentType: 'application/json', text: json)
@@ -44,6 +44,6 @@ class AsignaturaController {
     def showUserAsignaturas(Long id){
         log.info("Ingresando a showUserAsignaturas. Id: "+id)
         def userInstance = User.load(id)
-        render(model:[user:userInstance])
+        render(view:'/asignatura/showUserAsignatura',model:[user:userInstance])
     }
 }
