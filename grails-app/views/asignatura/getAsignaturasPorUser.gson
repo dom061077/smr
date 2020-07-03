@@ -1,0 +1,9 @@
+import com.smr.academico.Asignatura
+
+model {
+    List<Asignatura> list
+}
+
+json{
+    asignaturas list.collect{[value:it.id,label:it.descripcion]}
+}

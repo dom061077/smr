@@ -74,6 +74,10 @@ class UrlMappings {
         get "/api/getasignaturas" (controller:"asignatura",action:"getAsignaturas")
         post "/api/linkasignaturasusers" (controller:"asignatura",action:"saveAsignaturaUser")
         get "/api/showuserasignaturas/$id" (controller:"asignatura",action:"showUserAsignaturas")
+        get "/api/getasignaturaturnos/$id" (controller:"asignatura",action:"turnos")
+        get "/api/countExamenesAsig" (controller:"asignatura",action:"countExamenesAsig")
+        get "/api/getalumnoexamenes" (controller:"asignatura",action:"listExamenes")
+        get "/api/getasignaturascurrentuser" (controller:"asignatura",action:"getAsignaturasPorUser")
         
     }
 }

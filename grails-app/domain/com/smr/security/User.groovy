@@ -33,7 +33,11 @@ class User implements Serializable {
         (UserAuthority.findAllByUser(this) as List<UserAuthority>)*.authority as Set<Authority>
     }
     
+    
+    
     static hasMany = [asignaturas:Asignatura]
+    
+    static belongsTo = Asignatura
 
     static constraints = {
         password nullable: false, blank: false, password: true
@@ -48,5 +52,6 @@ class User implements Serializable {
     
     static mapping = {
 	    password column: '`password`'
+            
     }
 }

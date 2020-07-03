@@ -3,6 +3,11 @@ package com.smr.academico
 import com.smr.inscripcion.Curso
 import com.smr.security.User
 
+import groovy.transform.Sortable
+import groovy.transform.ToString
+
+@Sortable(includes = ['descripcion'])
+@ToString
 class Asignatura {
     String descripcion
     
@@ -17,6 +22,7 @@ class Asignatura {
     
     
     static belongsTo = [curso:Curso]
-    static hasMany = [User]
+    
+    static hasMany = [users:User]
     
 }

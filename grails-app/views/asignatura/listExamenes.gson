@@ -1,0 +1,9 @@
+import com.smr.academico.Examen
+
+model {
+    List<Examen> list
+}
+
+json{
+    examenes list.collect{[cursoDivision:it[0],id:it[1],nombre:it[2],apellido:it[3]]}
+}
