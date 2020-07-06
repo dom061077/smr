@@ -6,7 +6,7 @@ import com.smr.academico.PeriodoEvaluacion
 
 class PeriodoLectivo implements Auditable {
     int anio
-    boolean state
+    boolean state //0=activo, 1=inactivo
     
     static hasMany = [periodosEval:PeriodoEvaluacion]
     

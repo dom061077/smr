@@ -126,53 +126,26 @@ class AsignaturaController {
             max: limit as Integer?:10,
             offset:start as Integer?:0
         ]
-        def list = Examen.createCriteria().list(pagingconfig){
-              
-              //createAlias('')
-              inscripcion{
- 
-                    projections{
-                         detalle{
-                              tcDivision{
-                                  curso{
-                                      groupProperty("nombre")
-                                  }
-                              }
-
-                          }      
-                        alumno{
-                          
-                              groupProperty  ('id')
-                              groupProperty  ('apellido')
-                              groupProperty  ('nombre')
-
-                                                       
-                        }                    
-                      
-                  }
-
-
-              }
-              asignatura{
-                if(asigId)
-                    eq("id",asigId)
-                users{
-                    'in' ("id",[currentUser.id])
-                }
-              }
-            inscripcion{
-                eq("anulada",false)
-                periodoLectivo{
-                    eq("state",false)
-                }
-                alumno{
-                    if(filter)
-                        ilike("apellidoNombre",'%'+filter+'%')
-                }
-                
-            }
-            //setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+        String hql = "SELECT a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
+        hql = hql+" ,SUM(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then e.puntuacion else 0 end)/count(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then 1 else 0 end)"
+        hql = hql+" ,SUM(case when e.tipoExamen.complementario=true then e.puntuacion else 0 end)"
+        hql = hql+" FROM Examen e inner join e.inscripcion i inner  join i.detalle d "
+        hql = hql+" inner join e.inscripcion.periodoLectivo p"
+        hql = hql+" inner join e.asignatura a"
+        hql = hql+" inner join e.asignatura.users u"
+        hql = hql+" inner join d.tcDivision tcd "
+        hql = hql+" inner join tcd.curso"
+        hql = hql+" inner join tcd.division"
+        hql = hql+" where u.id=:userId and p.state=false"
+        def parameters = [userId:currentUser.id,offset:start,max:limit]
+        if(asigId){
+            hql = hql + " and a.id = :asigId"
+            parameters.put('asigId',asigId)
         }
+        
+        hql = hql +" group by a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"        
+        
+        def list = Examen.executeQuery(hql,parameters)
         log.info("LIST: "+list)
         return[list:list]
     }

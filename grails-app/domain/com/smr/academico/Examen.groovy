@@ -2,7 +2,7 @@ package com.smr.academico
 
 import com.smr.alumno.Alumno
 import com.smr.inscripcion.Inscripcion
-
+import java.math.BigDecimal
 class Examen {
     
     String descripcion
@@ -13,6 +13,8 @@ class Examen {
     Asignatura asignatura
     
     Inscripcion inscripcion
+    
+    BigDecimal puntuacion
     
     
     static belongsTo = [tipoExamen:TipoExamen,periodoEval:PeriodoEvaluacion
