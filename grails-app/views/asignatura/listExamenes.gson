@@ -6,5 +6,5 @@ model {
 //[[MatemÃ¡tica II, 2, osoresX, rafael, 5Â°, 1Â°, PRIMER TRIMESTRE, 0.00, 0.00]
 
 json{
-    examenes list.collect{[curso:it[4],division:[5],id:it[1],nombre:it[3],apellido:it[2],periodoEvaluacion:it[6],promedio:it[7],complementario:it[8]]}
+    examenes list.collect{[asignatura:it[0],curso:it[4],division:[5],id:it[1],nombre:it[3],apellido:it[2],periodoEvaluacion:it[6],promedio:it[7],complementario:it[8]]}
 }

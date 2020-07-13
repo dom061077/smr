@@ -149,5 +149,28 @@ class AsignaturaController {
         log.info("LIST: "+list)
         return[list:list]
     }
+    
+    def showExamenes(Long asigId, Long alumnoId){
+        log.info("Ingresando a show Examen")
+        def currentUser = springSecurityService.getCurrentUser()
+        String hql = "SELECT e.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
+        hql = hql +" ,e.tipoExamen.descripcion ,e.puntuacion,e.inscripcion.periodoLectivo.anio"
+        hql = hql+" FROM Examen e inner join e.inscripcion i inner  join i.detalle d "
+        hql = hql+" inner join e.inscripcion.periodoLectivo p"
+        hql = hql+" inner join e.asignatura a"
+        hql = hql+" inner join e.asignatura.users u"
+        hql = hql+" inner join d.tcDivision tcd "
+        hql = hql+" inner join tcd.curso"
+        hql = hql+" inner join tcd.division"
+        hql = hql+" where u.id=:userId and p.state=false"
+       
+        hql = hql + " and a.id = :asigId and i.alumno.id = :alumnoId"
+        hql = hql + " order by   e.periodoEval.descripcion,e.tipoExamen.ordenCompendio"
+        def parameters = [userId:currentUser.id,asigId:asigId,alumnoId:alumnoId]
+
+    
+        def list = Examen.executeQuery(hql,parameters)  
+        return[list:list]
+    }
 
 }

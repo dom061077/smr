@@ -1,0 +1,13 @@
+import com.smr.academico.Examen
+
+model{
+    List<Examen> list
+}
+//SELECT e.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
+//" ,e.tipoExamen.descripcion ,e.puntuacion,e.inscripcion.periodoLectivo.anio"
+json{
+    examenes list.collect{[ id:it[0],asignatura:it[1],apellido:it[3]
+            ,nombre:it[4],curso:it[5],division:it[6],periodoEval:it[7]
+            ,tipoExamen:it[8],puntuacion:it[9]
+            ,alumnoId: it[2],periodoLectivo:it[10] ]}
+}

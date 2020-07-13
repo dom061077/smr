@@ -78,6 +78,6 @@ class UrlMappings {
         get "/api/countExamenesAsig" (controller:"asignatura",action:"countExamenesAsig")
         get "/api/getalumnoexamenes" (controller:"asignatura",action:"listExamenes")
         get "/api/getasignaturascurrentuser" (controller:"asignatura",action:"getAsignaturasPorUser")
-        
+        get "/api/getalumnoexamenes" (controller:"asignatura",action:"showExamenes")
     }
 }
