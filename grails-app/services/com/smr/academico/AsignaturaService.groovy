@@ -2,6 +2,7 @@ package com.smr.academico
 
 import grails.gorm.transactions.Transactional
 import com.smr.security.User
+import java.math.BigDecimal
 
 @Transactional
 class AsignaturaService {
@@ -39,5 +40,19 @@ class AsignaturaService {
             return savedAsig
         }else
             return asigInstance
+    }
+    
+    def savePromedios(def promJSON){
+        log.info("savePromedios en AsignaturaService "+promJSON)
+        def examInstance 
+        promJSON.each{
+            examInstance = Examen.get(it.getKey().replaceAll("exam",""))
+            examInstance.puntuacion=new BigDecimal(it.getValue())
+            
+            if(!examInstance.save() || examInstance.hasErrors())
+                return 
+            examInstance = null    
+        }
+        return examInstance
     }
 }

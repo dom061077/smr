@@ -8,6 +8,7 @@ import com.smr.security.User
 //import org.hibernate.Criteria
 import java.util.Collections
 import java.util.ArrayList
+import grails.web.JSONBuilder
 
 class AsignaturaController {
 	static responseFormats = ['json', 'xml']
@@ -171,6 +172,29 @@ class AsignaturaController {
     
         def list = Examen.executeQuery(hql,parameters)  
         return[list:list]
+    }
+    
+    def savePromedios(){
+        log.info("Ingresando a saveProvedios: "+request.JSON)
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        
+        request.JSON.each{
+            log.info("Variable nombre: "+it.getKey().replaceAll("exam","")+" variable valor: "+it.getValue())
+        }
+        
+        def retorno=asignaturaService.savePromedios(request.JSON)
+        if(retorno){
+                render (view:"/errors/_errors",model:[errors:retorno.errors])
+                return               
+        }
+        
+        
+        def json = jsonBuilder.build{
+            success = true
+        }
+        render(status: 200, contentType: 'application/json', text: json) 
+        
+        
     }
 
 }
