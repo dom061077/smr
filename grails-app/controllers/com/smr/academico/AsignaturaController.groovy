@@ -127,9 +127,9 @@ class AsignaturaController {
             max: limit as Integer?:10,
             offset:start as Integer?:0
         ]
-        String hql = "SELECT a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
-        hql = hql+" ,SUM(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then e.puntuacion else 0 end)/count(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then 1 else 0 end)"
-        hql = hql+" ,SUM(case when e.tipoExamen.complementario=true then e.puntuacion else 0 end)"
+        String hql = "SELECT e.asignatura.id, a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre"
+        hql = hql+" ,SUM(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then e.puntuacion else 0 end)/sum(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then 1 else 0 end) "
+        hql = hql+" ,SUM(case when e.tipoExamen.complementario=true then e.puntuacion else 0 end)/sum(case when e.tipoExamen.promediable=false and e.tipoExamen.complementario=true then 1 else 0 end)"
         hql = hql+" FROM Examen e inner join e.inscripcion i inner  join i.detalle d "
         hql = hql+" inner join e.inscripcion.periodoLectivo p"
         hql = hql+" inner join e.asignatura a"
@@ -144,17 +144,17 @@ class AsignaturaController {
             parameters.put('asigId',asigId)
         }
         
-        hql = hql +" group by a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"        
+        hql = hql +" group by e.asignatura.id, a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre"        
         
         def list = Examen.executeQuery(hql,parameters)
-        log.info("LIST: "+list)
+        
         return[list:list]
     }
     
     def showExamenes(Long asigId, Long alumnoId){
         log.info("Ingresando a show Examen")
         def currentUser = springSecurityService.getCurrentUser()
-        String hql = "SELECT e.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
+        String hql = "SELECT e.id,e.asignatura.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
         hql = hql +" ,e.tipoExamen.descripcion ,e.puntuacion,e.inscripcion.periodoLectivo.anio"
         hql = hql+" FROM Examen e inner join e.inscripcion i inner  join i.detalle d "
         hql = hql+" inner join e.inscripcion.periodoLectivo p"

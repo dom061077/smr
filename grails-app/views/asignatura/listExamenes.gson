@@ -1,10 +1,17 @@
 import com.smr.academico.Examen
+import java.math.BigDecimal
 
 model {
     List<Examen> list
 }
-//[[MatemÃ¡tica II, 2, osoresX, rafael, 5Â°, 1Â°, PRIMER TRIMESTRE, 0.00, 0.00]
+/*        String hql = "SELECT e.asignatura.id, a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre
+        ,SUM(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false 
+            then e.puntuacion else 0 end)/count(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then 1 else 0 end)
+        ,SUM(case when e.tipoExamen.complementario=true then e.puntuacion else 0 end)
+*/
 
 json{
-    examenes list.collect{[asignatura:it[0],curso:it[4],division:[5],id:it[1],nombre:it[3],apellido:it[2],periodoEvaluacion:it[6],promedio:it[7],complementario:it[8]]}
+    examenes list.collect{[alumnoId:it[2],asignaturaId:it[0], asignatura:it[1],curso:it[5],division:[6],id:it[2],nombre:it[4],apellido:it[3]
+        ,promedio:new BigDecimal(it[7].toString()).setScale(2,BigDecimal.ROUND_HALF_UP)
+        ,complementario:new BigDecimal(it[8].toString()).setScale(2,BigDecimal.ROUND_HALF_UP) ]}
 }

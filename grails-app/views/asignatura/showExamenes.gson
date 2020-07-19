@@ -3,11 +3,11 @@ import com.smr.academico.Examen
 model{
     List<Examen> list
 }
-//SELECT e.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
+//SELECT e.id,e.asignatura.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
 //" ,e.tipoExamen.descripcion ,e.puntuacion,e.inscripcion.periodoLectivo.anio"
 json{
-    examenes list.collect{[ id:it[0],asignatura:it[1],apellido:it[3]
-            ,nombre:it[4],curso:it[5],division:it[6],periodoEval:it[7]
-            ,tipoExamen:it[8],puntuacion:it[9]
-            ,alumnoId: it[2],periodoLectivo:it[10] ]}
+    examenes list.collect{[ id:it[0],asignatura:it[2],apellido:it[4]
+            ,nombre:it[5],curso:it[6],division:it[7],periodoEval:it[8]
+            ,tipoExamen:it[9],puntuacion:it[10]
+            ,alumnoId: it[3],periodoLectivo:it[11] ]}
 }
