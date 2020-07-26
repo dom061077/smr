@@ -82,7 +82,7 @@ hibernate:
 dataSource:
         driverClassName: com.mysql.jdbc.Driver
         dbCreate: create-drop
-        logSql: true
+        #logSql: true
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         url: jdbc:mysql://localhost/smr?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
         username: root

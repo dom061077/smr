@@ -1,26 +1,29 @@
 package com.smr.academico
 
 import com.smr.alumno.Alumno
-import com.smr.inscripcion.Inscripcion
+
 import java.math.BigDecimal
 class Examen {
     
     String descripcion
     
     TipoExamen tipoExamen
-    PeriodoEvaluacion periodoEval
     
-    Asignatura asignatura
+    PeriodoEvalInscAsignatura periEvalInscAsig
     
-    Inscripcion inscripcion
+    
+    
     
     BigDecimal puntuacion
     
     
-    static belongsTo = [tipoExamen:TipoExamen,periodoEval:PeriodoEvaluacion
-                        ,inscripcion:Inscripcion
-                       ]
+    static belongsTo = [tipoExamen:TipoExamen
+                        ,periEvalInscAsig:PeriodoEvalInscAsignatura ]
     
+    static mapping ={
+        totalPromedio formula : 'SUM(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then e.puntuacion else 0 end)/sum(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then 1 else 0 end)'
+        totalComplementario formula : 'SUM(case when e.tipoExamen.complementario=true then e.puntuacion else 0 end)/sum(case when e.tipoExamen.promediable=false and e.tipoExamen.complementario=true then 1 else 0 end)'
+    }
     
 
     static constraints = {

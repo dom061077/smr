@@ -14,7 +14,7 @@ class ConfiguracionExamenesDetalle {
     
     static belongsTo = [periodoEval:PeriodoEvaluacion]
     
-    static hasMany = [asignaturas:Asignatura]
+   
     
     static constraints = {
     }

@@ -8,6 +8,7 @@ import com.smr.inscripcion.Inscripcion
 import com.smr.academico.Examen
 import com.smr.academico.TipoExamen
 import com.smr.academico.PeriodoEvaluacion
+import com.smr.academico.PeriodoEvalInscAsignatura
 
 
 @Transactional
@@ -15,32 +16,57 @@ class InscripcionService {
     
     private saveExamenes(Inscripcion insc){
         List listConfig = PeriodoEvaluacion.findAllByPeriodoLectivo(insc.periodoLectivo)
-        
+        log.info("Salvando examenes")
         listConfig.each{pe->
-            pe.configExamenes.each{ ced ->
-                TipoExamen tipoExamen=ced.tipoExamen
-                int cantExamenes = ced.cantidad
-                log.info("Tipo de examen: "+tipoExamen.descripcion+" cantidad: "+cantExamenes)
-                ced.asignaturas.each{ a ->
-                    for(int i=1; i<=cantExamenes; i++){
-                        boolean add=false
-                        insc.detalle.each{ det->
-                            if(a.curso.id.compareTo(det.tcDivision.curso.id)==0){
-                                add=true
-                                return
-                            }
-                        }
-                        log.info("Después del return comparando curso")
-                        if (add){
-                            new Examen(descripcion:i+'°'+tipoExamen.descripcion
-                                ,tipoExamen:tipoExamen,periodoEval:pe
-                                ,asignatura:a,inscripcion:insc).save()
-                        }
+            log.info("Cantidad de asignaturas en periodo evaluacion: "+pe)
+            pe.asignaturaPeriodoEvaluacion.each{ asigPE->
+                def pEvalInscAsigInstance
+                boolean add=false
+                insc.detalle.each{ det->
+                    log.info("Comparando: "+asigPE.asignatura.curso.id+" con  det.tcDivision.curso.id: "
+                        +det.tcDivision.curso.id)
+                    if(asigPE.asignatura.curso.id.compareTo(det.tcDivision.curso.id)==0){
+                        add=true
+                        log.info("Puede agregar periodos de evaluacion y examenes")
+                        return
                     }
                 }
+                if(add){
+                   pEvalInscAsigInstance = new PeriodoEvalInscAsignatura(
+                                       asignatura: asigPE.asignatura,inscripcion:insc
+                                       ,periodoEval:pe)                     
 
+                    pe.configExamenes.each{ ced ->
+                        TipoExamen tipoExamen=ced.tipoExamen
+                        int cantExamenes = ced.cantidad
+                        log.info("Tipo de examen a guardar: "+ced.tipoExamen)
+                        for(int i=1; i<=cantExamenes; i++){
+                            pEvalInscAsigInstance.addToExamenes(
+                                    new Examen(descripcion:i+'°'+tipoExamen.descripcion
+                                        ,tipoExamen:tipoExamen,pEvalInscAsigInstance:pEvalInscAsigInstance
+                                        ,puntuacion:new BigDecimal("0.00")
+                                        ,inscripcion:insc)
+                                )
+                        }
+
+                    }
+                    if(!pEvalInscAsigInstance.save() && pEvalInscAsigInstance.hasErrors())
+                        log.info("Errores en periodoevaluacion insc asig: "
+                            +pEvalInscAsigInstance.errors)
+                    
+                    
+                   
+                }
                 
-            }
+                
+                
+                
+                
+                
+                
+                
+                
+            }// ultimo bracket de asignaturas
             
         }
     }
