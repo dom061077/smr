@@ -1,6 +1,7 @@
 package com.smr.inscripcion
 
 import com.smr.alumno.Alumno
+import com.smr.academico.PeriodoEvalInscAsignatura
 
 import com.smr.escuela.Escuela
 import grails.plugins.orm.auditable.Auditable
@@ -31,7 +32,7 @@ class Inscripcion implements Auditable{
         return detStr
     }
     
-    private void addPeriodoEval(def listPEval,def pEval){
+    /*private void addPeriodoEval(def listPEval,def pEval){
         booolean existe=false
         listPEval.each{ 
             if(it==pEval){
@@ -41,12 +42,12 @@ class Inscripcion implements Auditable{
         }
         if(!existe)
             listPEval = pEval
-    }
+    }*/
     
     
     
     
-    static hasMany = [detalle:DetalleInscripcion,examenes:Examen]
+    static hasMany = [detalle:DetalleInscripcion,periodosInscEval:PeriodoEvalInscAsignatura]
     
     static transients = ['detalleInsc']
     

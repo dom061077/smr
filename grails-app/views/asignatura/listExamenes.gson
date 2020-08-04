@@ -4,14 +4,12 @@ import java.math.BigDecimal
 model {
     List<Examen> list
 }
-/*        String hql = "SELECT e.asignatura.id, a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre
-        ,SUM(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false 
-            then e.puntuacion else 0 end)/count(case when e.tipoExamen.promediable=true and e.tipoExamen.complementario=false then 1 else 0 end)
-        ,SUM(case when e.tipoExamen.complementario=true then e.puntuacion else 0 end)
+/*                            SELECT i.id, i.alumno.id,i.alumno.apellido,i.alumno.nombre,pe.asignatura.id
+                                   ,pe.asignatura.descripcion,tcd.curso.nombre,tcd.division.nombre,nd)
 */
 
 json{
-    examenes list.collect{[alumnoId:it[2],asignaturaId:it[0], asignatura:it[1],curso:it[5],division:[6],id:it[2],nombre:it[4],apellido:it[3]
-        ,promedio:new BigDecimal(it[7].toString()).setScale(2,BigDecimal.ROUND_HALF_UP)
-        ,complementario:new BigDecimal(it[8].toString()).setScale(2,BigDecimal.ROUND_HALF_UP) ]}
+    examenes list.collect{[alumnoId:it[1],asignaturaId:it[4], asignatura:it[5],curso:it[6],division:it[7],id:it[0],nombre:it[3],apellido:it[2]
+        ,promedio:new BigDecimal(it[8].toString()).setScale(2,BigDecimal.ROUND_HALF_UP)
+         ]}
 }
