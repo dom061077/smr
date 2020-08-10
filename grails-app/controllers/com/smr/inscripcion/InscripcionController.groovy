@@ -114,7 +114,8 @@ class InscripcionController {
                             ilike(filterField,'%'+filter+'%') 
                     }
                     if(filterField.compareTo("periodoLectivo")==0 && 
-                            filter.compareTo("")!=0)    
+                            filter.compareTo("")!=0 && 
+                            filter.compareTo("null")!=0)    
                         periodoLectivo{
                             eq("anio",Integer.parseInt(filter))
                         }
@@ -162,7 +163,8 @@ class InscripcionController {
                             ilike(filterField,"%"+filter+"%")                    
                     }
                     if(filterField.compareTo("periodoLectivo")==0
-                        && filter.compareTo("")!=0)    
+                        && filter.compareTo("")!=0
+                        && filter.compareTo("null")!=0)    
                         periodoLectivo{
                             eq("anio",Integer.parseInt(filter))
                         }

@@ -9,7 +9,7 @@ model {
 */
 
 json{
-    examenes list.collect{[alumnoId:it[1],asignaturaId:it[4], asignatura:it[5],curso:it[6],division:it[7],id:it[0],nombre:it[3],apellido:it[2]
+    examenes list.collect{[alumnoId:it[1],asignaturaId:it[4],asignaturaId:it[4], asignatura:it[5],curso:it[6],division:it[7],id:it[0],nombre:it[3],apellido:it[2]
         ,promedio:new BigDecimal(it[8].toString()).setScale(2,BigDecimal.ROUND_HALF_UP)
          ]}
 }

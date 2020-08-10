@@ -80,6 +80,7 @@ class UrlMappings {
         get "/api/getasignaturascurrentuser" (controller:"asignatura",action:"getAsignaturasPorUser")
         get "/api/showalumnoexamenes" (controller:"asignatura",action:"showExamenes")
         post "/api/savepromedios" (controller:"asignatura",action:"savePromedios")
-        
+        get "/api/getpromediosperi" (controller:"asignatura",action:"listPromediosPorPeriodoEval")
+        post "/api/compendio" (controller:"asignatura",action:"exportarCompendioXls")
     }
 }

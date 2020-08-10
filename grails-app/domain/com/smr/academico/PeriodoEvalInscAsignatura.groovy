@@ -11,6 +11,9 @@ class PeriodoEvalInscAsignatura {
     Inscripcion inscripcion
     PeriodoEvaluacion periodoEval
     
+    int cantInasist
+    
+    
     BigDecimal totalPromedio
     
     static hasMany = [examenes:Examen]

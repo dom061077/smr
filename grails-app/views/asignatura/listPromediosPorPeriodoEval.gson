@@ -1,0 +1,9 @@
+import java.math.BigDecimal
+
+model{
+    List list
+}
+
+json{
+    promedios list.collect{[periodoEval:it[0],promedio:new BigDecimal(it[3].toString()).setScale(2,BigDecimal.ROUND_HALF_UP)]}
+}

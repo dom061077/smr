@@ -10,6 +10,18 @@ import java.util.Collections
 import java.util.ArrayList
 import grails.web.JSONBuilder
 import com.smr.inscripcion.Inscripcion
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.util.CellRangeAddress
+import org.apache.poi.hssf.usermodel.HSSFCellStyle
+import org.apache.poi.ss.usermodel.HorizontalAlignment
+import org.apache.poi.ss.usermodel.VerticalAlignment
+import org.apache.poi.ss.usermodel.IndexedColors
+import org.apache.poi.ss.usermodel.BorderStyle
+import org.apache.poi.ss.util.RegionUtil
+import org.apache.poi.ss.util.CellRangeAddress
+import org.apache.poi.hssf.usermodel.HSSFPrintSetup
 
 class AsignaturaController {
 	static responseFormats = ['json', 'xml']
@@ -228,67 +240,152 @@ class AsignaturaController {
         
         
     }
+    
+    def listPromediosPorPeriodoEval(Long inscId, Long asigId){
+        log.info("Ingresando a listPromediosPorPeriodoEval. inscId:"
+            +inscId+" asigId"+asigId)
+
+
+        def hql = """
+                    SELECT pe.periodoEval.descripcion,SUM(e.puntuacion),count(e.id),SUM(e.puntuacion)/count(e.id) FROM PeriodoEvalInscAsignatura pe
+                    INNER JOIN pe.examenes e
+                    WHERE pe.inscripcion.id = :inscripcionId and pe.asignatura.id = :asignaturaId
+                    GROUP BY pe.periodoEval.descripcion
+
+                  """
+        def parameters=[inscripcionId:inscId,asignaturaId:asigId]          
+        def list = PeriodoEvalInscAsignatura.executeQuery(hql,parameters)         
+        return[list:list]
+    }
+    
+    String exportarCompendioXls(){
+        log.info("Ingresndo alexportarCompendioXls ")
+        //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
+        
+       Workbook workbook = new XSSFWorkbook();        
+        
+       CreationHelper createHelper = workbook.getCreationHelper();
+ 
+        // Create a Sheet
+        Sheet sheet = workbook.createSheet("Compendio");  
+        sheet.getPrintSetup().setLandscape(true);
+        sheet.getPrintSetup().setPaperSize(HSSFPrintSetup.LEGAL_PAPERSIZE); 
+        //------fijando tamaños de columnas----
+        for(int i=0;i<34;i++){
+            sheet.setColumnWidth(i,256*3)
+            
+        }
+        sheet.setColumnWidth(1,256*3*10)
+        //----------------------------------------------
+        Font headerFont = workbook.createFont();
+        headerFont.setColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 16);
+       
+        //headerFont.setColor(IndexedColors.RED.getIndex());
+
+        // Create a CellStyle with the font
+        CellStyle headerCellStyle = workbook.createCellStyle();
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )
+        headerCellStyle.setFont(headerFont);
+        
+        // Create a Row
+        Row headerRow = sheet.createRow(0);       
+        
+        Cell cell = headerRow.createCell(0)
+        cell.setCellStyle(headerCellStyle);
+        cell.setCellValue("ESCUELA SECUNDARIA BARRIO LOS PINOS")
+        sheet.addMergedRegion(new CellRangeAddress(
+                0, //first row (0-based)
+                0, //last row  (0-based)
+                0, //first column (0-based)
+                34  //last column  (0-based)
+        ));
+        //----------------------------------------------
+        headerRow = sheet.createRow(1);
+        cell = headerRow.createCell(0)
+        headerCellStyle = workbook.createCellStyle()
+        headerFont = workbook.createFont();
+        headerCellStyle.setFont(headerFont)
+        
+        headerFont.setColor(IndexedColors.LIGHT_BLUE.getIndex());
+        headerFont.setBold(true)
+        headerCellStyle.getFont().setFontHeightInPoints((short) 14);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )        
+        cell.setCellStyle(headerCellStyle)
+        
+
+
+        cell.setCellValue("PLANILLA ANUAL DE CALIFICACIONES - AÑO 2020")
+        sheet.addMergedRegion(new CellRangeAddress(
+                1, //first row (0-based)
+                1, //last row  (0-based)
+                0, //first column (0-based)
+                34  //last column  (0-based)
+        ));    
+        CellRangeAddress mergedRegions = sheet.getMergedRegion(1);
+        RegionUtil.setBorderLeft(BorderStyle.THIN, mergedRegions, sheet);
+        RegionUtil.setBorderRight(BorderStyle.THIN, mergedRegions, sheet);
+        RegionUtil.setBorderTop(BorderStyle.THIN, mergedRegions, sheet);
+        RegionUtil.setBorderBottom(BorderStyle.THIN, mergedRegions, sheet);
+        
+        //----------------------------------------
+        
+        
+       /*for(int i = 0; i < columns.size(); i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(columns[i]);
+            cell.setCellStyle(headerCellStyle);
+        }         
+        Font rowFont = workbook.createFont();
+        rowFont.setFontHeightInPoints((short) 14);
+        CellStyle rowCellStyle = workbook.createCellStyle();
+        rowCellStyle.setFont(rowFont)
+        
+        
+        for(int i = 0; i < data.size(); i++){
+            int j = i+1
+            Row row = sheet.createRow(j)
+            for(int k = 0;k < propertyNames.size();k++){
+                Cell cell = row.createCell(k)
+                //DefaultGrailsDomainClass domainClass = ((DefaultGrailsDomainClass)data[i])
+                //cell.setCellValue((data[i]).getPersistentValue(propertyNames[k]).toString());
+                def fieldValue=getPropertyValue(propertyNames[k],data[i]);
+                fieldValue = formatValue(fieldValue)
+                
+                cell.setCellValue(fieldValue);
+                
+                cell.setCellStyle(rowCellStyle);
+            }
+        }*/
+
+        
+        
+        
+        ByteArrayOutputStream arrayByte = new ByteArrayOutputStream();
+        workbook.write(arrayByte);
+        //workbook.write(encodedByte)
+        //fileOut.close();
+        workbook.close();
+        byte[] encodedByte = arrayByte.toByteArray()
+        
+        
+        Base64.Encoder enc = Base64.getEncoder();
+        byte[] strenc = enc.encode(encodedByte);
+        String encode = new String(strenc, "UTF-8");
+        
+        log.info("Encode*****************************");
+        log.info(encode)
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def json = jsonBuilder.build(){
+            report = encode
+        }
+        
+        render(status: 200, contentType: 'application/json', text: json)   
+    }
+    
 
 }
 
-/*
- 
-import com.smr.inscripcion.Inscripcion
-import com.smr.academico.PeriodoEvalInscAsignatura
-import com.smr.academico.Examen
-
-
-def list = Inscripcion.executeQuery(""" 
-                    SELECT i.id, i.alumno.id,i.alumno.apellido,pe.asignatura.id,
-                            SUM(    case 
-                                     when 
-                                         (
-                                            SELECT
-                                            SUM(puntuacion)/count(id)
-                                                
-                                            FROM 
-                                            Examen where periEvalInscAsig.id = pe.id
-                                            and  tipoExamen.promediable=true
-                                          ) < 6
-                                     
-                                     then 
-                                         (
-                                             SELECT
-                                            SUM(puntuacion)/count(id)
-                                                
-                                            FROM 
-                                            Examen where periEvalInscAsig.id = pe.id
-                                            and  tipoExamen.complementario=true
-                                          ) 
-                                     else 
-                                         (
-                                             SELECT
-                                            SUM(puntuacion)/count(id)
-                                                
-                                            FROM 
-                                            Examen where periEvalInscAsig.id = pe.id
-                                            and periEvalInscAsig.asignatura.id=pe.asignatura.id
-                                            and periEvalInscAsig.inscripcion.id=pe.inscripcion.id
-                                            and periEvalInscAsig.inscripcion.anulada=false
-                                            and  tipoExamen.promediable=true
-                                          ) 
-                                     
-                                end 
-                               )/(select count(id) FROM PeriodoEvalInscAsignatura WHERE  inscripcion.id = i.id and asignatura.id=pe.asignatura.id)
-                                       
-                               ,(select count(id) FROM PeriodoEvalInscAsignatura WHERE  inscripcion.id = i.id and asignatura.id=pe.asignatura.id)
-                    FROM Inscripcion i
-                    INNER JOIN i.periodosInscEval pe
-                    
-                    where i.anulada=false
-                    GROUP BY i.id, i.alumno.id,i.alumno.apellido,pe.asignatura.id
-                
-                """)
-
-//def list =PeriodoEvalInscAsignatura.list()
-//def list = Examen.executeQuery("SELECT puntuacion FROM Examen where periEvalInscAsig.id=8")                
-                
-                
-// def list2 =    PeriodoEvalInscAsignatura.executeQuery("FROM PeriodoEvalInscAsignatura where inscripcion.id=56") 
- *  
- * */

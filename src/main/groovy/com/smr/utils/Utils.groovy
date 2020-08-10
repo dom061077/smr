@@ -94,6 +94,7 @@ class Utils{
         Base64.Encoder enc = Base64.getEncoder();
         byte[] strenc = enc.encode(encodedByte);
         String encode = new String(strenc, "UTF-8");
+
         return encode
     }
     
