@@ -19,17 +19,22 @@ class Asignatura {
     
     static constraints = {
         descripcion(blank:false,nullable:false)
-        asignaturaPeriodoEvaluacion nullable:true
+        //asignaturaPeriodoEvaluacion nullable:true
     }
     
     static mapping = {
-        tablePerHierarchy false
+        //users lazy : false
+        //detalleAsigPerEval lazy : false
+    
     }     
     
     
     static belongsTo = [curso:Curso]
     
     static hasMany = [users:User
-        ,asignaturaPeriodoEvaluacion:AsignaturaPeriodoEvaluacion]
+        ,detalleAsigPerEval:AsignaturaPeriodoEvaluacion]
+    
+    
+        
     
 }

@@ -14,7 +14,7 @@ class PeriodoEvaluacion {
     
     String descripcion 
 
-    int cantClases=0
+    
 
     
     static belongsTo = [tipoPeriodoEval: TipoPeriodoEvaluacion
@@ -22,15 +22,39 @@ class PeriodoEvaluacion {
             ,periodoLectivo:PeriodoLectivo]
     
     static hasMany = [configExamenes:ConfiguracionExamenesDetalle
-        ,asignaturaPeriodoEvaluacion:AsignaturaPeriodoEvaluacion]
+        ,detalleAsigPerEval:AsignaturaPeriodoEvaluacion]
     
     static mapping = {
-        tablePerHierarchy false
+        //tablePerHierarchy false
     }     
     
     static constraints = {
-        asignaturaPeriodoEvaluacion nullable:true
+        //asignaturaPeriodoEvaluacion nullable:true
     }
     
     
 }
+
+/*
+ * 
+import com.smr.academico.PeriodoEvalInscAsignatura
+import com.smr.academico.AsignaturaPeriodoEvaluacion 
+import com.smr.academico.Asignatura
+import com.smr.academico.PeriodoEvaluacion
+
+String hql = """ 
+                SELECT pe FROM PeriodoEvaluacion  pe
+                INNER JOIN pe.detalleAsigPerEval det
+                WHERE  det.asignatura.id = 3
+                AND pe.periodoLectivo.anio = 2020
+             """
+             
+List list = PeriodoEvaluacion.executeQuery(hql)             
+
+list.each{
+    println("Periodo evalucion: "+it.descripcion)
+} 
+
+
+ * 
+ * */

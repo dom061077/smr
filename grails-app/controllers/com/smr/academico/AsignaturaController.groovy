@@ -258,9 +258,20 @@ class AsignaturaController {
         return[list:list]
     }
     
-    String exportarCompendioXls(){
+    String exportarCompendioXls(Long asignaturaId,Long periodoLectivoId){
         log.info("Ingresndo alexportarCompendioXls ")
         //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
+        
+        String hql = """ 
+                    SELECT pe,u,det FROM PeriodoEvaluacion  pe
+                    INNER JOIN pe.detalleAsigPerEval det
+                    INNER JOIN det.asignatura a
+                    INNER JOIN a.users u
+                    WHERE  det.asignatura.id = :asigId
+                    AND pe.periodoLectivo.id = :periodoLectivoId
+                 """
+        def parameters=[asigId:asignaturaId, periodoLectivoId:periodoLectivoId]
+        List list = PeriodoEvaluacion.executeQuery(hql,parameters)          
         
        Workbook workbook = new XSSFWorkbook();        
         
@@ -332,7 +343,26 @@ class AsignaturaController {
         RegionUtil.setBorderBottom(BorderStyle.THIN, mergedRegions, sheet);
         
         //----------------------------------------
-        
+        //--------------- datos de profesor--------------------
+        headerRow = sheet.createRow(2)
+        headerRow.setHeight((short)(256*2))
+        cell = headerRow.createCell(0)
+        headerCellStyle = workbook.createCellStyle()
+        headerFont = workbook.createFont();
+        headerFont.setBold(true)
+        headerCellStyle.setFont(headerFont)
+        headerCellStyle.getFont().setFontHeightInPoints((short) 10);
+        headerCellStyle.setAlignment(HorizontalAlignment.LEFT )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )        
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("NOMBRE DE MATERIA")
+        sheet.addMergedRegion(new CellRangeAddress(
+                2,2,0,2
+        ))
+        cell = headerRow.createCell(3)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("PROFESOR")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,3,5))
         
        /*for(int i = 0; i < columns.size(); i++) {
             Cell cell = headerRow.createCell(i);
@@ -385,6 +415,41 @@ class AsignaturaController {
         
         render(status: 200, contentType: 'application/json', text: json)   
     }
+
+    
+    private List getPeriodosEval(Long turnoId,Long asigId, Long periId){
+        log.info("Ingresando a getPeriodosEval")
+        String hql ="""         SELECT 
+                                    a.descripcion,c.id,c.nombre
+                                    ,tcd.division.nombre                           
+
+                                FROM Asignatura a
+                                INNER JOIN a.curso c
+                                INNER JOIN a.users u
+                                INNER JOIN a.detalleAsigPerEval dpe
+                                INNER JOIN TurnoCursoDivision tcd on tcd.curso.id = c.id 
+                                    and tcd.turno.id=:turnoId
+                                WHERE a.id=:asigId 
+                     """
+        def parameters = [turnoId:turnoId,asigId:asigId,periId:periId]
+        def list = Asignatura.executeQuery(hql,parameters)         
+    
+    /*
+                        SELECT 
+                            a.descripcion,c.id,c.nombre
+                            ,(SELECT tcd.division.nombre FROM TurnoCursoDivision tcd WHERE 
+                                tcd.curso.id = c.id AND tcd.turno.id=1
+                            )                             
+
+                        FROM Asignatura a
+                        INNER JOIN a.curso c
+                        INNER JOIN a.users u
+                        INNER JOIN a.detalleAsigPerEval dpe
+                        WHERE a.id=3 and dpe.periodoEvaluacion.id=2    
+    
+    */
+    }    
+
     
 
 }
