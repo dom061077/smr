@@ -23,6 +23,7 @@ import org.apache.poi.ss.util.RegionUtil
 import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup
 
+
 class AsignaturaController {
 	static responseFormats = ['json', 'xml']
         def asignaturaService
@@ -31,9 +32,12 @@ class AsignaturaController {
 	
     def index() { }
     
-    def getAsignaturas(){
-        log.info("Ingresando a getAsignaturas")
-        def list = Asignatura.list(sort:"descripcion")
+    def getAsignaturas(String filter){
+        log.info("Ingresando a getAsignaturas. Filter: "+filter)
+        def list = Asignatura.createCriteria().list(){
+            ilike("descripcion","%"+filter+"%")
+            order("descripcion","desc")
+        }
         render(view:"/asignatura/getAsignaturas",model:[list:list])
     }
     
@@ -258,7 +262,7 @@ class AsignaturaController {
         return[list:list]
     }
     
-    String exportarCompendioXls(Long asignaturaId,Long periodoLectivoId){
+    String exportarCompendioXls(Long asignaturaId,Long periodoLectivoId,Long turnoId,Long divisionId){
         log.info("Ingresndo alexportarCompendioXls ")
         //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
         
@@ -273,20 +277,21 @@ class AsignaturaController {
         def parameters=[asigId:asignaturaId, periodoLectivoId:periodoLectivoId]
         List list = PeriodoEvaluacion.executeQuery(hql,parameters)          
         
-       Workbook workbook = new XSSFWorkbook();        
+        Workbook workbook = new XSSFWorkbook();        
         
-       CreationHelper createHelper = workbook.getCreationHelper();
+        CreationHelper createHelper = workbook.getCreationHelper();
  
         // Create a Sheet
         Sheet sheet = workbook.createSheet("Compendio");  
         sheet.getPrintSetup().setLandscape(true);
         sheet.getPrintSetup().setPaperSize(HSSFPrintSetup.LEGAL_PAPERSIZE); 
         //------fijando tamaños de columnas----
-        for(int i=0;i<34;i++){
-            sheet.setColumnWidth(i,256*3)
+        for(int i=2;i<34;i++){
+            sheet.setColumnWidth(i,256*3+100)
             
         }
-        sheet.setColumnWidth(1,256*3*10)
+        sheet.setColumnWidth(0,256*3+10)
+         sheet.setColumnWidth(1,256*3*10)
         //----------------------------------------------
         Font headerFont = workbook.createFont();
         headerFont.setColor(IndexedColors.LIGHT_BLUE.getIndex());
@@ -336,11 +341,6 @@ class AsignaturaController {
                 0, //first column (0-based)
                 34  //last column  (0-based)
         ));    
-        CellRangeAddress mergedRegions = sheet.getMergedRegion(1);
-        RegionUtil.setBorderLeft(BorderStyle.THIN, mergedRegions, sheet);
-        RegionUtil.setBorderRight(BorderStyle.THIN, mergedRegions, sheet);
-        RegionUtil.setBorderTop(BorderStyle.THIN, mergedRegions, sheet);
-        RegionUtil.setBorderBottom(BorderStyle.THIN, mergedRegions, sheet);
         
         //----------------------------------------
         //--------------- datos de profesor--------------------
@@ -360,9 +360,92 @@ class AsignaturaController {
                 2,2,0,2
         ))
         cell = headerRow.createCell(3)
+        headerCellStyle = workbook.createCellStyle()
+        headerFont = workbook.createFont();        
+        headerFont.setBold(true)
+        headerCellStyle.setFont(headerFont)
+        headerCellStyle.getFont().setFontHeightInPoints((short) 11);
+        headerCellStyle.setAlignment(HorizontalAlignment.LEFT )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )        
         cell.setCellStyle(headerCellStyle)
-        cell.setCellValue("PROFESOR")
+        
+        cell.setCellValue("PROFESOR XXX")
         sheet.addMergedRegion(new CellRangeAddress(2,2,3,5))
+        
+        cell = headerRow.createCell(6)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("Nombre Profesor Probando")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,6,14))
+        
+        cell = headerRow.createCell(15)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("Curso")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,15,16))
+        
+        cell = headerRow.createCell(17)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("1°")
+        
+        cell = headerRow.createCell(18)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("Division")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,18,20))
+        
+        cell = headerRow.createCell(21)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("2°")        
+        
+        cell = headerRow.createCell(22)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("MODALIDAD")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,22,24))
+        
+        cell = headerRow.createCell(25)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("C.B.S")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,25,27))
+        
+        cell = headerRow.createCell(28)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("TURNO:")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,28,29))
+        
+        cell = headerRow.createCell(30)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("MAÑANA")
+        sheet.addMergedRegion(new CellRangeAddress(2,2,30,32))        
+        
+        headerRow = sheet.createRow(3)
+        cell = headerRow.createCell(0)
+        cell.setCellValue("Orden")
+        
+        cell = headerRow.createCell(1)
+        cell.setCellValue("APELLIDO Y NOMBRE")
+        headerRow.setHeight((short)(256*2))      
+        headerRow = sheet.createRow(4)
+        headerRow.setHeight((short)(256*2+100))        
+        sheet.addMergedRegion(new CellRangeAddress(3,4,0,0))
+        
+        
+        headerRow = sheet.createRow(4)
+        headerRow.setHeight((short)(256*2+100))        
+        sheet.addMergedRegion(new CellRangeAddress(3,4,1,1))   
+        
+        //----------bordes de regiones-------
+        /*for(int i = 1;i<=10;i++){
+            CellRangeAddress mergedRegions = sheet.getMergedRegion(i);
+            RegionUtil.setBorderLeft(BorderStyle.THIN, mergedRegions, sheet);
+            RegionUtil.setBorderRight(BorderStyle.THIN, mergedRegions, sheet);
+            RegionUtil.setBorderTop(BorderStyle.THIN, mergedRegions, sheet);
+            RegionUtil.setBorderBottom(BorderStyle.THIN, mergedRegions, sheet);
+        }*/
+        
+        
+        /*headerRow = sheet.createRow(5)
+        cell = headerRow.createCell(2)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue(5)
+        sheet.setColumnWidth(2,256*3+100)*/
         
        /*for(int i = 0; i < columns.size(); i++) {
             Cell cell = headerRow.createCell(i);
@@ -449,6 +532,7 @@ class AsignaturaController {
     
     */
     }    
+    
 
     
 
