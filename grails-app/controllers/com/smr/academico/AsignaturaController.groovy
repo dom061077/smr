@@ -262,20 +262,18 @@ class AsignaturaController {
         return[list:list]
     }
     
-    String exportarCompendioXls(Long asignaturaId,Long periodoLectivoId,Long turnoId,Long divisionId){
-        log.info("Ingresndo alexportarCompendioXls ")
+    String exportarCompendioXls(){
+        log.info("Ingresndo alexportarCompendioXls "+request.JSON.asigId+" periLectivoId: "+request.JSON.periLectivoId)
         //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
         
-        String hql = """ 
-                    SELECT pe,u,det FROM PeriodoEvaluacion  pe
-                    INNER JOIN pe.detalleAsigPerEval det
-                    INNER JOIN det.asignatura a
-                    INNER JOIN a.users u
-                    WHERE  det.asignatura.id = :asigId
-                    AND pe.periodoLectivo.id = :periodoLectivoId
-                 """
-        def parameters=[asigId:asignaturaId, periodoLectivoId:periodoLectivoId]
-        List list = PeriodoEvaluacion.executeQuery(hql,parameters)          
+        String hql = """ FROM AsignaturaPeriodoEvaluacion ape
+                         WHERE ape.periodoEvaluacion.periodoLectivo.id = :periodoLectivoId
+                         AND ape.asignatura.id = :asigId
+                     """
+        def parameters=[asigId:new Long(request.JSON.asigId)
+                , periodoLectivoId:new Long(request.JSON.periLectivoId)]
+        List listAsigPeriodoEval = PeriodoEvaluacion.executeQuery(hql,parameters)          
+        log.info("Cantidad de periodos: "+listAsigPeriodoEval.size()+" con parametros: "+parameters)
         
         Workbook workbook = new XSSFWorkbook();        
         
@@ -416,20 +414,99 @@ class AsignaturaController {
         sheet.addMergedRegion(new CellRangeAddress(2,2,30,32))        
         
         headerRow = sheet.createRow(3)
+        def periodoLectHeaderRow = headerRow
         cell = headerRow.createCell(0)
         cell.setCellValue("Orden")
+        headerCellStyle = workbook.createCellStyle()
+        headerFont = workbook.createFont();        
+        headerFont.setBold(true)
+        headerCellStyle.setFont(headerFont)
+        headerCellStyle.getFont().setFontHeightInPoints((short) 11);
+        headerCellStyle.setAlignment(HorizontalAlignment.LEFT )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )  
+        headerCellStyle.setRotation((short)90);
+        cell.setCellStyle(headerCellStyle)     
+        cell.setCellStyle(headerCellStyle)         
+        
+        headerCellStyle = workbook.createCellStyle()
+        headerFont = workbook.createFont();        
+        headerFont.setBold(true)
+        headerCellStyle.setFont(headerFont)
+        headerCellStyle.getFont().setFontHeightInPoints((short) 6);
+        headerCellStyle.setAlignment(HorizontalAlignment.LEFT )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )  
+        headerCellStyle.setRotation((short)90);
+        
+          
+        cell = headerRow.createCell(2)
+        cell.setCellStyle(headerCellStyle)
+        cell.setCellValue("CONDICION")
+        
+        //-------------above from here is the header----
+
+        //cell = headerRow.createCell(3)
+        //cell.setCellStyle(headerCellStyle)
+        //cell.setCellValue("DIAGNOSTICO")
+        //sheet.addMergedRegion(new CellRangeAddress(3,4,3,3))
         
         cell = headerRow.createCell(1)
+        headerCellStyle = workbook.createCellStyle()
+        headerFont = workbook.createFont();        
+        headerFont.setBold(true)
+        headerCellStyle.setFont(headerFont)
+        headerCellStyle.getFont().setFontHeightInPoints((short) 11);
+        headerCellStyle.setAlignment(HorizontalAlignment.CENTER )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )  
+        cell.setCellStyle(headerCellStyle)        
+        
         cell.setCellValue("APELLIDO Y NOMBRE")
         headerRow.setHeight((short)(256*2))      
         headerRow = sheet.createRow(4)
         headerRow.setHeight((short)(256*2+100))        
         sheet.addMergedRegion(new CellRangeAddress(3,4,0,0))
+        cell.setCellStyle(headerCellStyle)   
         
-        
-        headerRow = sheet.createRow(4)
-        headerRow.setHeight((short)(256*2+100))        
+        //headerRow = sheet.createRow(4)
+        //headerRow.setHeight((short)(256*2+100))        
         sheet.addMergedRegion(new CellRangeAddress(3,4,1,1))   
+        sheet.addMergedRegion(new CellRangeAddress(3,4,2,2))
+        //--------------Periodos-------------------------------------
+                //-----estilo de columna---
+        def cellStyle = workbook.createCellStyle()
+        def cellFont = workbook.createFont();        
+        cellFont.setBold(true)
+        cellStyle.setFont(headerFont)
+        cellStyle.getFont().setFontHeightInPoints((short) 10);
+        cellStyle.setAlignment(HorizontalAlignment.CENTER )
+        cellStyle.setVerticalAlignment(VerticalAlignment.CENTER )  
+        cellStyle.setRotation((short)90)
+        
+        
+        
+        
+        int lastColumn=3
+        listAsigPeriodoEval.each{
+            cell = periodoLectHeaderRow.createCell(lastColumn)
+            cell.setCellValue(it.periodoEvaluacion.descripcion)
+            cell.setCellStyle(headerCellStyle)
+            int examColumn = lastColumn
+            def configExams = it.periodoEvaluacion.configExamenes.sort{a,b->
+                    a.tipoExamen.ordenCompendio-b.tipoExamen.ordenCompendio
+            }
+            configExams.each{cnf->
+                cell = headerRow.createCell(examColumn)//uso la fila debajo de trimestre para crear celdas
+                cell.setCellStyle(cellStyle)
+                cell.setCellValue(cnf.tipoExamen.descripcion)
+                examColumn = examColumn + 1
+            }
+            
+            
+            sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn,lastColumn+it.periodoEvaluacion.configExamenes.size()))
+            lastColumn = lastColumn+it.periodoEvaluacion.configExamenes.size()+1
+            
+            
+        }
+        
         
         //----------bordes de regiones-------
         /*for(int i = 1;i<=10;i++){
