@@ -494,16 +494,44 @@ class AsignaturaController {
                     a.tipoExamen.ordenCompendio-b.tipoExamen.ordenCompendio
             }
             configExams.each{cnf->
-                cell = headerRow.createCell(examColumn)//uso la fila debajo de trimestre para crear celdas
-                cell.setCellStyle(cellStyle)
-                cell.setCellValue(cnf.tipoExamen.descripcion)
-                examColumn = examColumn + 1
+
+                
+                if(cnf.cantidad>1){
+                    for(int i=0;i<cnf.cantidad;i++){
+                        
+                        cell=headerRow.createCell(examColumn)
+                        cell.setCellStyle(cellStyle)
+                        cell.setCellValue(""+(i+1))
+                        examColumn++
+                    }
+                }else{
+                    if(cnf.tipoExamen.complementario){
+                        cell = headerRow.createCell(examColumn)//uso la fila debajo de trimestre para crear celdas
+                        cell.setCellStyle(cellStyle)                    
+                        cell.setCellValue("PROM.")
+                        examColumn++
+                    }
+                    cell = headerRow.createCell(examColumn)//uso la fila debajo de trimestre para crear celdas
+                    cell.setCellStyle(cellStyle)                    
+                    cell.setCellValue(cnf.tipoExamen.descripcion)
+                    examColumn++
+                }
+                
             }
+            cell = headerRow.createCell(examColumn)
+            cell.setCellStyle(cellStyle)
+            cell.setCellValue("INASIST.")
+            int periLastColumn =  1+/*suno uno de IANSIST.*/1/*sumo uno del promedio*/+it.periodoEvaluacion.configExamenes.size()
+            periLastColumn = periLastColumn/2
+            log.info("periLastColumn: "+periLastColumn)
+            sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn,lastColumn+periLastColumn))
+            periLastColumn = lastColumn + periLastColumn + 1
             
-            
-            sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn,lastColumn+it.periodoEvaluacion.configExamenes.size()))
-            lastColumn = lastColumn+it.periodoEvaluacion.configExamenes.size()+1
-            
+            lastColumn = lastColumn+it.periodoEvaluacion.configExamenes.size()+1+1/*sumo uno del promedio*/+1/*sumo uno de INASIST.*/
+            log.info("periLastColumn: "+periLastColumn+" lastColumn: "+lastColumn)
+            sheet.addMergedRegion(new CellRangeAddress(3,3,periLastColumn,lastColumn-1))
+            cell = periodoLectHeaderRow.createCell(periLastColumn)
+            cell.setCellValue("N\\° Clases: "+it.cantClases)
             
         }
         
