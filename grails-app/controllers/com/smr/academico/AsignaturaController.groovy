@@ -22,6 +22,8 @@ import org.apache.poi.ss.usermodel.BorderStyle
 import org.apache.poi.ss.util.RegionUtil
 import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Cell
 
 
 class AsignaturaController {
@@ -531,11 +533,26 @@ class AsignaturaController {
             log.info("periLastColumn: "+periLastColumn+" lastColumn: "+lastColumn)
             sheet.addMergedRegion(new CellRangeAddress(3,3,periLastColumn,lastColumn-1))
             cell = periodoLectHeaderRow.createCell(periLastColumn)
-            cell.setCellValue("N\\° Clases: "+it.cantClases)
+            cell.setCellValue("N Clases: "+it.cantClases)
             
         }
         
-        
+        CellRangeAddress region = new CellRangeAddress(3,4,0,18)
+        RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderTop(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderLeft(BorderStyle.THIN, region, sheet);
+        RegionUtil.setBorderRight(BorderStyle.THIN, region, sheet);
+        Row row = sheet.getRow(4) 
+        for(int i=0;i<lastColumn;i++){
+            cell=row.getCell(i) 
+            cellStyle = cell.getCellStyle()
+            cellStyle.setBorderTop(BorderStyle.THIN);
+            cellStyle.setBorderBottom(BorderStyle.THIN)
+            cellStyle.setBorderLeft(BorderStyle.THIN)
+            cellStyle.setBorderRight(BorderStyle.THIN)
+            cell.setCellStyle(cellStyle);
+            
+        }
         //----------bordes de regiones-------
         /*for(int i = 1;i<=10;i++){
             CellRangeAddress mergedRegions = sheet.getMergedRegion(i);
