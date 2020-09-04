@@ -2,8 +2,8 @@
 package com.smr.enums
 
 public enum CondicionEnum {
-	CONDICION_REGULAR("REGULAR"),
-	CONDICION_REPITENTE("REPITENTE")
+	CONDICION_REGULAR("REG"),
+	CONDICION_REPITENTE("REP")
 	
 	
 	String name

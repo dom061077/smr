@@ -264,13 +264,29 @@ class AsignaturaController {
         return[list:list]
     }
     
+    private void setCellStyleCuerpo(def workbook,def cell){
+        def headerCellStyle = workbook.createCellStyle()
+        def headerFont = workbook.createFont();
+        headerFont.setBold(true)
+        headerCellStyle.setFont(headerFont)
+        headerCellStyle.getFont().setFontHeightInPoints((short) 10);
+        headerCellStyle.setAlignment(HorizontalAlignment.LEFT )
+        headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )        
+        cell.setCellStyle(headerCellStyle)        
+    }
+    
     String exportarCompendioXls(){
-        log.info("Ingresndo alexportarCompendioXls "+request.JSON.asigId+" periLectivoId: "+request.JSON.periLectivoId)
+        /*
+         * asignaturaId:number,periLectivoId:number
+            ,turnoId:number,cursoId:number,divisionId:number
+         * */
+        log.info("Ingresndo alexportarCompendioXls. Parametros: "+request.JSON)
         //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
         
         String hql = """ FROM AsignaturaPeriodoEvaluacion ape
                          WHERE ape.periodoEvaluacion.periodoLectivo.id = :periodoLectivoId
-                         AND ape.asignatura.id = :asigId
+                         AND ape.asignatura.id = :asigId\n\
+                         ORDER BY ape.periodoEvaluacion.ordenCompendio
                      """
         def parameters=[asigId:new Long(request.JSON.asigId)
                 , periodoLectivoId:new Long(request.JSON.periLectivoId)]
@@ -517,20 +533,25 @@ class AsignaturaController {
                     cell.setCellStyle(cellStyle)                    
                     cell.setCellValue(cnf.tipoExamen.descripcion)
                     examColumn++
+
                 }
                 
             }
-            cell = headerRow.createCell(examColumn)
+            
+
+            
+            int periLastColumn = 1+/*complementario*/ 1+/*sumo uno de IANSIST.*/1/*sumo uno del promedio*/+it.periodoEvaluacion.configExamenes.size()
+            
+            cell = headerRow.createCell(lastColumn+periLastColumn)
             cell.setCellStyle(cellStyle)
             cell.setCellValue("INASIST.")
-            int periLastColumn =  1+/*suno uno de IANSIST.*/1/*sumo uno del promedio*/+it.periodoEvaluacion.configExamenes.size()
             periLastColumn = periLastColumn/2
             log.info("periLastColumn: "+periLastColumn)
             sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn,lastColumn+periLastColumn))
             periLastColumn = lastColumn + periLastColumn + 1
             
-            lastColumn = lastColumn+it.periodoEvaluacion.configExamenes.size()+1+1/*sumo uno del promedio*/+1/*sumo uno de INASIST.*/
-            log.info("periLastColumn: "+periLastColumn+" lastColumn: "+lastColumn)
+            lastColumn = lastColumn+it.periodoEvaluacion.configExamenes.size()+1+1/*sumo uno del promedio*/+1/*sumo uno de INASIST.*/+1/*complementario*/
+            
             sheet.addMergedRegion(new CellRangeAddress(3,3,periLastColumn,lastColumn-1))
             cell = periodoLectHeaderRow.createCell(periLastColumn)
             cell.setCellValue("N Clases: "+it.cantClases)
@@ -553,6 +574,84 @@ class AsignaturaController {
             cell.setCellStyle(cellStyle);
             
         }
+        
+        //------------------iterando alumnos-----------------
+        hql=''' SELECT  i FROM Inscripcion i
+                    INNER JOIN i.detalle det
+                    INNER JOIN det.tcDivision tcd
+                    WHERE tcd.curso.id = :cursoId AND tcd.division.id = :divisionId
+                    AND tcd.turno.id = :turnoId
+                    AND i.periodoLectivo.id = :periodoLectId
+                    AND i.anulada=false            
+                    ORDER BY i.alumno.apellido,i.alumno.nombre
+                '''
+                //
+                //,
+
+         parameters = [cursoId:new Long(request.JSON.cursoId),divisionId:new Long(request.JSON.divisionId)
+                , periodoLectId:new Long(request.JSON.periLectivoId),turnoId:new Long(request.JSON.turnoId)]        
+        def listInscripcion = Inscripcion.executeQuery(hql,parameters)
+        Row rowAlumnos 
+        int orden=1
+        
+        listInscripcion.each{
+            log.info("Alumno: "+it.alumno.apellido)
+            rowAlumnos = sheet.createRow(4+orden);
+            cell = rowAlumnos.createCell(0)
+            cell.setCellValue(orden)
+            cell = rowAlumnos.createCell(1)
+            cell.setCellValue(it.alumno.apellido+" "+it.alumno.nombre)
+            cell = rowAlumnos.createCell(2)
+            cell.setCellValue(it.condicion.name)
+            setCellStyleCuerpo(workbook,cell)
+            def filteredPie = it.periodosInscEval.findAll{pie->
+                pie.asignatura.id.compareTo(new Long(request.JSON.asigId))==0
+                
+            }
+            filteredPie = filteredPie.sort{a,b->
+                a.periodoEval.ordenCompendio-b.periodoEval.ordenCompendio
+            }
+            int column=3
+            filteredPie.each{filPie->
+                def filteredExams = filPie.examenes.sort {a,b->
+                    a.tipoExamen.ordenCompendio-b.tipoExamen.ordenCompendio
+                }
+                log.info("    Periodo eval: "+ filPie.periodoEval.descripcion)
+                filteredExams.each{exam->
+                    cell = rowAlumnos.createCell(column)
+                    log.info("          TipoExamn: "+exam.tipoExamen.descripcion)
+                    setCellStyleCuerpo(workbook,cell)
+                    if(exam.tipoExamen.complementario){
+                        cell.setCellValue(filPie.totalPromedio)
+                        log.info("                      promedio: "+filPie.totalPromedio)
+                        column++
+                        cell = rowAlumnos.createCell(column)
+                        setCellStyleCuerpo(workbook,cell)
+                        cell.setCellValue(exam.puntuacion)
+                        log.info("                      complementario: "+exam.puntuacion)
+                        
+                    }else{
+                        
+                        cell.setCellValue(exam.puntuacion)
+                        log.info("                      puntuacion: "+exam.puntuacion)
+                    }
+                    
+                    column++
+                    
+                        
+                }            
+                column++ //sumo una columna para la inasistencia
+                cell = rowAlumnos.createCell(column)
+                setCellStyleCuerpo(workbook,cell)                
+                cell.setCellValue('I')
+                column++
+                 
+                
+            }
+
+            log.info("Cantidad de periodos para la asignatura: "+filteredPie.size())
+            orden++
+        } 
         //----------bordes de regiones-------
         /*for(int i = 1;i<=10;i++){
             CellRangeAddress mergedRegions = sheet.getMergedRegion(i);

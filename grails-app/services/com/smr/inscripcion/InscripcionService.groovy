@@ -19,7 +19,7 @@ class InscripcionService {
         log.info("Salvando examenes")
         listConfig.each{pe->
             log.info("Cantidad de asignaturas en periodo evaluacion: "+pe)
-            pe.asignaturaPeriodoEvaluacion.each{ asigPE->
+            pe.detalleAsigPerEval.each{ asigPE->
                 def pEvalInscAsigInstance
                 boolean add=false
                 insc.detalle.each{ det->
