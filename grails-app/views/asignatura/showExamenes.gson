@@ -1,7 +1,9 @@
 import com.smr.academico.Examen
+import com.smr.academico.PeriodoEvalInscAsignatura
 
 model{
     List<Examen> list
+    List<PeriodoEvalInscAsignatura> periodos
 }
 //SELECT e.id,e.asignatura.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,e.periodoEval.descripcion"
 //" ,e.tipoExamen.descripcion ,e.puntuacion,e.inscripcion.periodoLectivo.anio"
@@ -9,5 +11,8 @@ json{
     examenes list.collect{[ id:it[0],asignatura:it[2],apellido:it[4]
             ,nombre:it[5],curso:it[6],division:it[7],periodoEval:it[8]
             ,tipoExamen:it[9],puntuacion:it[10]
-            ,alumnoId: it[3],periodoLectivo:it[11] ]}
+            ,alumnoId: it[3],periodoLectivo:it[11],inasistencia:it[12],periodoEvalInscAsigId:it[13]
+            ,ordenCompendio:it[14]
+            ]}
+    periodos periodos.collect{[id:it.id,descripcion:it.periodoEval.descripcion]}
 }

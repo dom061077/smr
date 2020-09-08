@@ -203,10 +203,13 @@ class AsignaturaController {
     }
     
     def showExamenes(Long asigId, Long alumnoId){
-        log.info("Ingresando a show Examen")
+        log.info("Ingresando a show Examen. asigId: "+asigId+" alumnoId: "+alumnoId)
+        
         def currentUser=springSecurityService.getCurrentUser()
+        log.info("UserId: "+currentUser.id)
         String hql = """ SELECT e.id,a.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,pe.periodoEval.descripcion
                          ,e.tipoExamen.descripcion ,e.puntuacion,i.periodoLectivo.anio
+                         ,pe.cantInasist,pe.id,e.tipoExamen.ordenCompendio,pe
                         FROM Inscripcion i inner join i.periodosInscEval pe inner  join i.detalle d 
                          inner join pe.asignatura a
                          inner join pe.examenes e
@@ -215,13 +218,70 @@ class AsignaturaController {
                          where u.id=:userId and i.periodoLectivo.state=true
                          and a.id = :asigId and i.alumno.id = :alumnoId                       
                         
-                         order by   pe.periodoEval.descripcion,e.tipoExamen.ordenCompendio"""
+                         order by   pe.periodoEval.descripcion,e.tipoExamen.ordenCompendio,e.id"""
         
         def parameters = [userId:currentUser.id,asigId:asigId,alumnoId:alumnoId]
 
     
         def list = Examen.executeQuery(hql,parameters)  
-        return[list:list]
+        def periodos = list.collect{it[15]}
+        periodos = periodos.unique{
+            it.id
+        }
+        log.info("Periodos: "+periodos)
+        return[list:list,periodos:periodos]
+    }
+     
+    def showExamenes2(Long asigId, Long alumnoId){
+        log.info("Ingresando a show Examen. asigId: "+asigId+" alumnoId: "+alumnoId)
+        
+        def currentUser=springSecurityService.getCurrentUser()
+        log.info("UserId: "+currentUser.id)
+        String hql = """ SELECT e.id,a.id,a.descripcion, i.alumno.id,i.alumno.apellido, i.alumno.nombre,tcd.curso.nombre,tcd.division.nombre,pe.periodoEval.descripcion
+                         ,e.tipoExamen.descripcion ,e.puntuacion,i.periodoLectivo.anio
+                         ,pe.cantInasist,pe.id,e.tipoExamen.ordenCompendio,pe
+                        FROM Inscripcion i inner join i.periodosInscEval pe inner  join i.detalle d 
+                         inner join pe.asignatura a
+                         inner join pe.examenes e
+                         inner join a.users u
+                         inner join d.tcDivision tcd 
+                         where u.id=:userId and i.periodoLectivo.state=true
+                         and a.id = :asigId and i.alumno.id = :alumnoId                       
+                        
+                         order by   pe.periodoEval.descripcion,e.tipoExamen.ordenCompendio,e.id"""
+        
+        def parameters = [userId:currentUser.id,asigId:asigId,alumnoId:alumnoId]
+
+    
+        def list = Examen.executeQuery(hql,parameters)  
+        def periodosEval = list.collect{e->
+            e[15]
+        }
+        periodosEval = periodosEval.unique{
+            it.id
+        }
+        log.info("Alumno: "+periodosEval.getAt(0).inscripcion.alumno.apellido)
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        log.info("Periodos: "+periodosEval)
+        def json = jsonBuilder.build{
+            periodos = periodosEval.collect{p->
+                def examenes = p.examenes.sort{a,b->
+                    if(a.tipoExamen.ordenCompendio==b.tipoExamen.ordenCompendio)
+                        a.id-b.id
+                    else
+                        a.tipoExamen.ordenCompendio - b.tipoExamen.ordenCompendio
+                }
+                return [id:p.id,descripcion:p.periodoEval.descripcion
+                            ,inscripcion:p.inscripcion
+                            ,cantInasist:p.cantInasist,examenes:examenes]
+            }
+            alumno = periodosEval.getAt(0).inscripcion.alumno
+            asignatura = periodosEval.getAt(0).asignatura
+            
+            
+        } 
+
+        render(status: 200,contentType:'application/json',text:json)
     }
     
     def savePromedios(){
@@ -614,9 +674,12 @@ class AsignaturaController {
             int column=3
             filteredPie.each{filPie->
                 def filteredExams = filPie.examenes.sort {a,b->
-                    a.tipoExamen.ordenCompendio-b.tipoExamen.ordenCompendio
+                    if(a.tipoExamen.ordenCompendio==b.tipoExamen.ordenCompendio)
+                        return a.descripcion.compareTo(b.descripcion)
+                    else
+                        return a.tipoExamen.ordenCompendio-b.tipoExamen.ordenCompendio
                 }
-                log.info("    Periodo eval: "+ filPie.periodoEval.descripcion)
+                log.info("    Periodo eval: "+ filPie.periodoEval.descripcion+" pie ID; "+filPie.id)
                 filteredExams.each{exam->
                     cell = rowAlumnos.createCell(column)
                     log.info("          TipoExamn: "+exam.tipoExamen.descripcion)
@@ -640,7 +703,7 @@ class AsignaturaController {
                     
                         
                 }            
-                column++ //sumo una columna para la inasistencia
+                //column++ //sumo una columna para la inasistencia
                 cell = rowAlumnos.createCell(column)
                 setCellStyleCuerpo(workbook,cell)                
                 cell.setCellValue('I')
