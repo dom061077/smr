@@ -277,7 +277,8 @@ class AsignaturaController {
             }
             alumno = periodosEval.getAt(0).inscripcion.alumno
             asignatura = periodosEval.getAt(0).asignatura
-            
+            periodoLectivo = periodosEval.getAt(0).inscripcion.periodoLectivo.anio
+            cursoDivision = periodosEval.getAt(0).inscripcion.detalleInsc
             
         } 
 

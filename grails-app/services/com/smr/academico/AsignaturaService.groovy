@@ -46,11 +46,17 @@ class AsignaturaService {
         log.info("savePromedios en AsignaturaService "+promJSON)
         def examInstance 
         promJSON.each{
-            examInstance = Examen.get(it.getKey().replaceAll("exam",""))
+            
+            String[] splitted = it.key.split("_")
+            log.info("Id examen: "+splitted[2])
+            log.info("              Id periodo: "+splitted[3])
+            log.info("                          Tipo: "+splitted[4])
+            
+            /* examInstance = Examen.get(it.getKey().replaceAll("exam",""))
             examInstance.puntuacion=new BigDecimal(it.getValue())
             
             if(!examInstance.save() || examInstance.hasErrors())
-                return 
+                return */
             examInstance = null    
         }
         return examInstance
