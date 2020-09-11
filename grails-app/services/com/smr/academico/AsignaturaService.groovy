@@ -45,18 +45,25 @@ class AsignaturaService {
     def savePromedios(def promJSON){
         log.info("savePromedios en AsignaturaService "+promJSON)
         def examInstance 
+        def periodoEvalInscAsigInstance
         promJSON.each{
             
             String[] splitted = it.key.split("_")
             log.info("Id examen: "+splitted[2])
             log.info("              Id periodo: "+splitted[3])
             log.info("                          Tipo: "+splitted[4])
+            if(splitted[4].compareTo("inas")==0){
+                periodoEvalInscAsigInstance = PeriodoEvalInscAsignatura.get(splitted[3])
+                periodoEvalInscAsigInstance.cantInasist = Integer.valueOf(it.getValue())
+                periodoEvalInscAsigInstance.save()
+            }else{
+                examInstance = Examen.get(splitted[2])
+                examInstance.puntuacion=new BigDecimal(it.getValue())
+                if(!examInstance.save() || examInstance.hasErrors())
+                    return 
+                
+            }
             
-            /* examInstance = Examen.get(it.getKey().replaceAll("exam",""))
-            examInstance.puntuacion=new BigDecimal(it.getValue())
-            
-            if(!examInstance.save() || examInstance.hasErrors())
-                return */
             examInstance = null    
         }
         return examInstance

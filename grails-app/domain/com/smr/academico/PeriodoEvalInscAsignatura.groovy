@@ -19,11 +19,14 @@ class PeriodoEvalInscAsignatura {
     
     BigDecimal getTotalPromedio(){
         BigDecimal total=BigDecimal.ZERO
+        int cant=0
         examenes.each{
-            if(it.tipoExamen.promediable)
+            if(it.tipoExamen.promediable){
                 total = total.add(it.puntuacion)
+                cant++
+            }
         }
-        return total.divide(examenes.size(), RoundingMode.HALF_UP)
+        return total.divide(cant, RoundingMode.HALF_UP)
     }
     
     BigDecimal getPuntuacionComplementaria(){
