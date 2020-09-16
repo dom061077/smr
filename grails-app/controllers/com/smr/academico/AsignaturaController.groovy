@@ -273,7 +273,10 @@ class AsignaturaController {
                 }
                 return [id:p.id,descripcion:p.periodoEval.descripcion
                             ,inscripcion:p.inscripcion
-                            ,cantInasist:p.cantInasist,examenes:examenes]
+                            ,cantInasist:p.cantInasist
+                            ,examenes:examenes
+                            ,promedio:p.totalPromedio
+                       ]
             }
             alumno = periodosEval.getAt(0).inscripcion.alumno
             asignatura = periodosEval.getAt(0).asignatura
@@ -283,6 +286,32 @@ class AsignaturaController {
         } 
 
         render(status: 200,contentType:'application/json',text:json)
+    }
+    
+    def saveExam(){
+        log.info("Ingresando a saveExam: "+request.JSON)
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        def examId=request.JSON.examId as Integer?:0
+        def puntuacion=(request.JSON.puntuacion?new BigDecimal(request.JSON.puntuacion):BigDecimal.ZERO)
+        def totalPromedio=0
+        def s=true
+        def retorno = asignaturaService.saveExam(examId,new BigDecimal(puntuacion))
+        if(retorno?.hasErrors()){
+            log.info("Retorna por error")
+            render (view:"/errors/_errors",model:[errors:retorno.errors])
+            return
+        }else{
+            if(retorno){
+                totalPromedio = retorno.periEvalInscAsig.totalPromedio
+                s = true
+            }else
+                s = false
+        }
+        def json = jsonBuilder.build{
+            success = s
+            promedio = totalPromedio
+        }
+        render(status: 200, contentType: 'application/json',text: json)
     }
     
     def savePromedios(){
@@ -707,7 +736,7 @@ class AsignaturaController {
                 //column++ //sumo una columna para la inasistencia
                 cell = rowAlumnos.createCell(column)
                 setCellStyleCuerpo(workbook,cell)                
-                cell.setCellValue('I')
+                cell.setCellValue(filPie.cantInasist)
                 column++
                  
                 

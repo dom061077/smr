@@ -83,6 +83,7 @@ class UrlMappings {
         get "/api/getpromediosperi" (controller:"asignatura",action:"listPromediosPorPeriodoEval")
         get "/api/getperiodoseval" (controller:"asignatura", action:"getPeriodosEval")
         post "/api/compendio" (controller:"asignatura",action:"exportarCompendioXls")
+        post "/api/saveexam" (controller:"asignatura",action:"saveExam")
         
         
         get "/api/showalumnoexamenes" (controller:"asignatura",action:"showExamenes2")

@@ -42,6 +42,18 @@ class AsignaturaService {
             return asigInstance
     }
     
+    def saveExam(Long examId, BigDecimal puntuacion ){
+        log.info("saveExam en AsignaturaService examId: "+examId+" puntuacion: "+puntuacion)
+        def examInstance = Examen.get(examId)
+        if(examInstance){
+            examInstance.puntuacion = puntuacion
+            examInstance.save()
+        }else{
+            examInstance = null
+        }
+        return examInstance
+    }
+    
     def savePromedios(def promJSON){
         log.info("savePromedios en AsignaturaService "+promJSON)
         def examInstance 
