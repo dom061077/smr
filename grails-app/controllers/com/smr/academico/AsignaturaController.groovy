@@ -232,8 +232,14 @@ class AsignaturaController {
         return[list:list,periodos:periodos]
     }
      
-    def showExamenes2(Long asigId, Long alumnoId){
-        log.info("Ingresando a show Examen. asigId: "+asigId+" alumnoId: "+alumnoId)
+    def showExamenesPorPeriodo(Long asigId, Long alumnoId, Long perId){
+        log.info("Ingresando a showExamenesPorPeriodo, asigId: "+asigId+" alumnoId: "+alumnoId+" perId: "+perId)
+        def currentUser=springSecurityService.getCurrentUser()
+        
+    }
+    
+    def showExamenes2(Long asigId, Long alumnoId,Long perId){
+        log.info("Ingresando a show Examen. asigId: "+asigId+" alumnoId: "+alumnoId+" perId: "+perId)
         
         def currentUser=springSecurityService.getCurrentUser()
         log.info("UserId: "+currentUser.id)
@@ -247,10 +253,15 @@ class AsignaturaController {
                          inner join d.tcDivision tcd 
                          where u.id=:userId and i.periodoLectivo.state=true
                          and a.id = :asigId and i.alumno.id = :alumnoId                       
-                        
+                         %filtroperiodo
                          order by   pe.periodoEval.descripcion,e.tipoExamen.ordenCompendio,e.id"""
-        
         def parameters = [userId:currentUser.id,asigId:asigId,alumnoId:alumnoId]
+        if(perId && perId.compareTo(Long.parseLong("0"))>0){
+            hql=hql.replaceAll("%filtroperiodo"," and pe.id = %perId")
+            paremeters.push(perId,perId)
+        }else
+            hql=hql.replaceAll("%filtroperiodo","")
+        
 
     
         def list = Examen.executeQuery(hql,parameters)  
@@ -274,7 +285,12 @@ class AsignaturaController {
                 return [id:p.id,descripcion:p.periodoEval.descripcion
                             ,inscripcion:p.inscripcion
                             ,cantInasist:p.cantInasist
-                            ,examenes:examenes
+                            ,examenes:examenes.collect{e->
+                               [id:e.id,descripcion:e.descripcion
+                                    ,puntuacion:e.puntuacion
+                                    ,promediable:e.tipoExamen.promediable
+                                    ,complementario:e.tipoExamen.complementario]
+                             }
                             ,promedio:p.totalPromedio
                        ]
             }
@@ -334,7 +350,28 @@ class AsignaturaController {
         }
         render(status: 200, contentType: 'application/json', text: json) 
         
-        
+         
+    }
+    
+    def invalidComplementario(Long perId,int puntuacion){
+        log.info("Ingresando a validateComplementario: perId: "+perId)
+        JSONBuilder jsonBuilder = new JSONBuilder()
+        //def examInstance = Examen.get(examId)
+        def perEvalInsc = PeriodoEvalInscAsignatura.get(perId)
+        def error = false
+        BigDecimal puntuacionComp=BigDecimal.ZERO
+        perEvalInsc.examenes.each{ e->
+            if(e.tipoExamen.complementario)
+                puntuacionComp = puntuacionComp.add(e.puntuacion)
+        }
+        log.info("Nota complemantario: "+puntuacionComp)
+        log.info("Nota total promedio: "+perEvalInsc.totalPromedio)
+        if(perEvalInsc.totalPromedio.compareTo(new BigDecimal(6))>=0 && puntuacion.compareTo(BigDecimal.ZERO)!=0)
+            error = true
+        def json = jsonBuilder.build{
+            success = error
+        }     
+        render(status:200, contentType: 'application/json',text:json)    
     }
     
     def listPromediosPorPeriodoEval(Long inscId, Long asigId){
@@ -364,6 +401,8 @@ class AsignaturaController {
         headerCellStyle.setVerticalAlignment(VerticalAlignment.CENTER )        
         cell.setCellStyle(headerCellStyle)        
     }
+    
+    
     
     String exportarCompendioXls(){
         /*

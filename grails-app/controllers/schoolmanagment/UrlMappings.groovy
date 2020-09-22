@@ -87,5 +87,6 @@ class UrlMappings {
         
         
         get "/api/showalumnoexamenes" (controller:"asignatura",action:"showExamenes2")
+        get "/api/invalidcomp" (controller:"asignatura",action:"invalidComplementario")
     }
 }
