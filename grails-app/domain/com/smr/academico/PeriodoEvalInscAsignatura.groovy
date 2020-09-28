@@ -13,9 +13,12 @@ class PeriodoEvalInscAsignatura {
     PeriodoEvaluacion periodoEval
     
     int cantInasist
+
+    boolean cerrado
+    
+
     
     
-    BigDecimal totalPromedio
     
     BigDecimal getTotalPromedio(){
         BigDecimal total=BigDecimal.ZERO
@@ -27,6 +30,14 @@ class PeriodoEvalInscAsignatura {
             }
         }
         return total.divide(cant, RoundingMode.HALF_UP)
+    }
+    
+    BigDecimal getNotaFinal(){
+        if(getTotalPromedio().compareTo(new BigDecimal("6"))<0)
+            return getPuntuacionComplementaria()
+        else
+            return getTotalPromedio()
+            
     }
     
     BigDecimal getPuntuacionComplementaria(){
@@ -47,7 +58,7 @@ class PeriodoEvalInscAsignatura {
     static constraints = {
     }
     
-    static transients= ['totalPromedio','puntuacionComplementaria']
+    static transients= ['totalPromedio','puntuacionComplementaria','notaFinal']
     
     static mapping = {
         //totalPromedio formula : "SELECT SUM(IF(te.promediable=TRUE,puntuacion,0)/IF(te.promediable=TRUE,1,0)) FROM examen e INNER JOIN tipo_examen te ON e.tipo_examen_id = te.id WHERE peri_eval_insc_asig_id = id"

@@ -67,6 +67,7 @@ class AsignaturaService {
             if(splitted[4].compareTo("inas")==0){
                 periodoEvalInscAsigInstance = PeriodoEvalInscAsignatura.get(splitted[3])
                 periodoEvalInscAsigInstance.cantInasist = Integer.valueOf(it.getValue())
+                periodoEvalInscAsigInstance.cerrado = true
                 periodoEvalInscAsigInstance.save()
             }else{
                 examInstance = Examen.get(splitted[2])

@@ -24,6 +24,7 @@ import org.apache.poi.ss.util.CellRangeAddress
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
+import java.math.RoundingMode
 
 
 class AsignaturaController {
@@ -257,8 +258,8 @@ class AsignaturaController {
                          order by   pe.periodoEval.descripcion,e.tipoExamen.ordenCompendio,e.id"""
         def parameters = [userId:currentUser.id,asigId:asigId,alumnoId:alumnoId]
         if(perId && perId.compareTo(Long.parseLong("0"))>0){
-            hql=hql.replaceAll("%filtroperiodo"," and pe.id = %perId")
-            paremeters.push(perId,perId)
+            hql=hql.replaceAll("%filtroperiodo"," and pe.id = :perInscId")
+            parameters.put("perInscId",perId)
         }else
             hql=hql.replaceAll("%filtroperiodo","")
         
@@ -271,7 +272,7 @@ class AsignaturaController {
         periodosEval = periodosEval.unique{
             it.id
         }
-        log.info("Alumno: "+periodosEval.getAt(0).inscripcion.alumno.apellido)
+        log.info("Alumno: "+periodosEval.getAt(0)?.inscripcion?.alumno?.apellido)
         JSONBuilder jsonBuilder = new JSONBuilder()
         log.info("Periodos: "+periodosEval)
         def json = jsonBuilder.build{
@@ -291,13 +292,14 @@ class AsignaturaController {
                                     ,promediable:e.tipoExamen.promediable
                                     ,complementario:e.tipoExamen.complementario]
                              }
+                            ,cerrado:p.cerrado
                             ,promedio:p.totalPromedio
                        ]
             }
-            alumno = periodosEval.getAt(0).inscripcion.alumno
-            asignatura = periodosEval.getAt(0).asignatura
-            periodoLectivo = periodosEval.getAt(0).inscripcion.periodoLectivo.anio
-            cursoDivision = periodosEval.getAt(0).inscripcion.detalleInsc
+            alumno = periodosEval.getAt(0)?.inscripcion?.alumno
+            asignatura = periodosEval.getAt(0)?.asignatura
+            periodoLectivo = periodosEval.getAt(0)?.inscripcion?.periodoLectivo?.anio
+            cursoDivision = periodosEval.getAt(0)?.inscripcion?.detalleInsc
             
         } 
 
@@ -359,28 +361,38 @@ class AsignaturaController {
         //def examInstance = Examen.get(examId)
         def perEvalInsc = PeriodoEvalInscAsignatura.get(perId)
         def error = false
+        String msgError=""
         BigDecimal puntuacionComp=BigDecimal.ZERO
-        perEvalInsc.examenes.each{ e->
+        perEvalInsc.examenes.each{ e-> 
             if(e.tipoExamen.complementario)
                 puntuacionComp = puntuacionComp.add(e.puntuacion)
         }
         log.info("Nota complemantario: "+puntuacionComp)
         log.info("Nota total promedio: "+perEvalInsc.totalPromedio)
-        if(perEvalInsc.totalPromedio.compareTo(new BigDecimal(6))>=0 && puntuacion.compareTo(BigDecimal.ZERO)!=0)
+        if(perEvalInsc.totalPromedio.compareTo(new BigDecimal(6))>=0 && puntuacion.compareTo(BigDecimal.ZERO)!=0){
             error = true
+            msgError = "El promedio del periodo es mayor a 6. Ingrese una puntuación igual a Cero para el examen Complementario"
+        }
+        
+        if(perEvalInsc.totalPromedio.compareTo(new BigDecimal(6))<0 && puntuacion.compareTo(BigDecimal.ZERO)==0){
+            error = true
+            msgError = "El promedio del periodo es menor a 6. Ingrese una puntuacion mayor a Cero para el examen complementario"
+        }
         def json = jsonBuilder.build{
             success = error
+            msg = msgError
         }     
+        log.info("json: "+json)
         render(status:200, contentType: 'application/json',text:json)    
     }
     
     def listPromediosPorPeriodoEval(Long inscId, Long asigId){
         log.info("Ingresando a listPromediosPorPeriodoEval. inscId:"
-            +inscId+" asigId"+asigId)
+            +inscId+" asigId"+asigId) 
 
 
         def hql = """
-                    SELECT pe.periodoEval.descripcion,SUM(e.puntuacion),count(e.id),SUM(e.puntuacion)/count(e.id) FROM PeriodoEvalInscAsignatura pe
+                    SELECT pe.id,pe.inscripcion.alumno.id,pe.asignatura.id, pe.periodoEval.descripcion,SUM(e.puntuacion),count(e.id),SUM(e.puntuacion)/count(e.id) FROM PeriodoEvalInscAsignatura pe
                     INNER JOIN pe.examenes e
                     WHERE pe.inscripcion.id = :inscripcionId and pe.asignatura.id = :asignaturaId
                     GROUP BY pe.periodoEval.descripcion
@@ -402,6 +414,19 @@ class AsignaturaController {
         cell.setCellStyle(headerCellStyle)        
     }
     
+    private void setCellCustomStyle(def workbook, def cell,int fontSize,boolean bold
+        ,def hAlignment,def vAlignment,int rotation){
+        def headerCellStyle = workbook.createCellStyle()
+        def headerFont = workbook.createFont()
+        headerFont.setBold(bold)
+        headerCellStyle.setFont(headerFont)
+        headerCellStyle.getFont().setFontHeightInPoints((short)fontSize)
+        headerCellStyle.setAlignment(hAlignment)
+        headerCellStyle.setVerticalAlignment(vAlignment)
+        cell.setCellStyle(headerCellStyle)
+        headerCellStyle.setRotation((short)rotation)
+        headerCellStyle.setWrapText(true)
+    }
     
     
     String exportarCompendioXls(){
@@ -632,6 +657,7 @@ class AsignaturaController {
         
         
         int lastColumn=3
+        int totalClases=0
         listAsigPeriodoEval.each{
             cell = periodoLectHeaderRow.createCell(lastColumn)
             cell.setCellValue(it.periodoEvaluacion.descripcion)
@@ -684,8 +710,29 @@ class AsignaturaController {
             sheet.addMergedRegion(new CellRangeAddress(3,3,periLastColumn,lastColumn-1))
             cell = periodoLectHeaderRow.createCell(periLastColumn)
             cell.setCellValue("N Clases: "+it.cantClases)
-            
+            totalClases+=it.cantClases
         }
+        sheet.addMergedRegion(new CellRangeAddress(3,4,lastColumn,lastColumn))
+        cell = periodoLectHeaderRow.createCell(lastColumn)
+        cell.setCellValue("FINAL")
+        cell.setCellStyle(cellStyle)
+        sheet.setColumnWidth(lastColumn,256*3*2)
+        
+        cell = periodoLectHeaderRow.createCell(lastColumn+1)
+        cell.setCellValue("T.CLASES")
+        setCellCustomStyle(workbook, cell,6,false ,HorizontalAlignment.CENTER
+            ,VerticalAlignment.CENTER,90)
+        
+        cell = periodoLectHeaderRow.createCell(lastColumn+2)
+        cell.setCellValue(totalClases)
+        setCellCustomStyle(workbook,cell,10,true,HorizontalAlignment.CENTER
+            ,VerticalAlignment.CENTER,0)
+        
+        cell = Usar otra fila para crear la celda periodoLectHeaderRow.createCell(lastColumn+1)
+        cell.setCellValue("T.INASIS.")
+        setCellCustomStyle(workbook,cell,6,true,HorizontalAlignment.CENTER
+            ,VerticalAlignment.CENTER,90)
+        
         
         CellRangeAddress region = new CellRangeAddress(3,4,0,18)
         RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
@@ -741,6 +788,7 @@ class AsignaturaController {
                 a.periodoEval.ordenCompendio-b.periodoEval.ordenCompendio
             }
             int column=3
+            BigDecimal notaFinal=BigDecimal.ZERO
             filteredPie.each{filPie->
                 def filteredExams = filPie.examenes.sort {a,b->
                     if(a.tipoExamen.ordenCompendio==b.tipoExamen.ordenCompendio)
@@ -749,6 +797,7 @@ class AsignaturaController {
                         return a.tipoExamen.ordenCompendio-b.tipoExamen.ordenCompendio
                 }
                 log.info("    Periodo eval: "+ filPie.periodoEval.descripcion+" pie ID; "+filPie.id)
+                
                 filteredExams.each{exam->
                     cell = rowAlumnos.createCell(column)
                     log.info("          TipoExamn: "+exam.tipoExamen.descripcion)
@@ -777,10 +826,16 @@ class AsignaturaController {
                 setCellStyleCuerpo(workbook,cell)                
                 cell.setCellValue(filPie.cantInasist)
                 column++
-                 
+                
+                notaFinal = notaFinal.add(filPie.notaFinal)
                 
             }
-
+            
+            
+            notaFinal = notaFinal.divide(filteredPie.size(),RoundingMode.HALF_UP)
+            cell = rowAlumnos.createCell(column)
+            setCellStyleCuerpo(workbook,cell)
+            cell.setCellValue(notaFinal)
             log.info("Cantidad de periodos para la asignatura: "+filteredPie.size())
             orden++
         } 

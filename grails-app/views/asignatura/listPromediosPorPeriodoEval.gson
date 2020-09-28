@@ -5,5 +5,6 @@ model{
 }
 
 json{
-    promedios list.collect{[periodoEval:it[0],promedio:new BigDecimal(it[3].toString()).setScale(2,BigDecimal.ROUND_HALF_UP)]}
+    promedios list.collect{[perId:it[0],alumnoId:it[1],asignaturaId:it[2], periodoEval:it[3]
+    ,promedio:new BigDecimal(it[6].toString()).setScale(2,BigDecimal.ROUND_HALF_UP)]}
 }
