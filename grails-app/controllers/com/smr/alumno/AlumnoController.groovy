@@ -66,14 +66,14 @@ class AlumnoController {
     		offset: start as Integer?:0
     	]        
         def list = Alumno.createCriteria().list(pagingconfig){
-            if(filterField.compareTo("")!=0){
+            if(filterField?.compareTo("")!=0){
                     
-                    if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                    if(filterField?.compareTo("dni")==0 && filter.compareTo("")!=0)
                             eq(filterField,Integer.parseInt(filter))
-                    if(filterField.compareTo("apellidoNombre")==0)
+                    if(filterField?.compareTo("apellidoNombre")==0)
                             ilike(filterField,"%"+filter+"%")                    
                     
-                    if(sortField.compareTo("")!=0 && sortField.compareTo("undefined")!=0)
+                    if(sortField?.compareTo("")!=0 && sortField?.compareTo("undefined")!=0)
                             order(sortField,ascDesc)
                     
                             
@@ -90,11 +90,11 @@ class AlumnoController {
         
         def c = Alumno.createCriteria()
         totalAlumnos = c.count{
-            if(filterField.compareTo("")!=0){
+            if(filterField?.compareTo("")!=0){
                     
-                        if(filterField.compareTo("dni")==0 && filter.compareTo("")!=0)
+                        if(filterField?.compareTo("dni")==0 && filter.compareTo("")!=0)
                             eq(filterField,Integer.parseInt(filter))
-                        if(filterField.compareTo("apellidoNombre")==0)
+                        if(filterField?.compareTo("apellidoNombre")==0)
                             ilike(filterField,"%"+filter+"%")                    
                     
                 

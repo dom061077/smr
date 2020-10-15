@@ -418,7 +418,7 @@ class AsignaturaController {
         ,def hAlignment,def vAlignment,int rotation){
         def headerCellStyle = workbook.createCellStyle()
         def headerFont = workbook.createFont()
-        headerFont.setBold(bold)
+        headerFont.setBold(bold) 
         headerCellStyle.setFont(headerFont)
         headerCellStyle.getFont().setFontHeightInPoints((short)fontSize)
         headerCellStyle.setAlignment(hAlignment)
@@ -438,7 +438,8 @@ class AsignaturaController {
         //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
         
         String hql = """ FROM AsignaturaPeriodoEvaluacion ape
-                         WHERE ape.periodoEvaluacion.periodoLectivo.id = :periodoLectivoId
+                         WHERE ape.periodoEvaluacion.periodoLectivo.id = :periodoLectivoId\n\
+                         AND ape.periodoEvaluacion.tipoPeriodoEval.id<3
                          AND ape.asignatura.id = :asigId\n\
                          ORDER BY ape.periodoEvaluacion.ordenCompendio
                      """
@@ -728,11 +729,15 @@ class AsignaturaController {
         setCellCustomStyle(workbook,cell,10,true,HorizontalAlignment.CENTER
             ,VerticalAlignment.CENTER,0)
         
-        cell = Usar otra fila para crear la celda periodoLectHeaderRow.createCell(lastColumn+1)
-        cell.setCellValue("T.INASIS.")
+        cell =  headerRow.createCell(lastColumn+1)
+        cell.setCellValue("T. INASIS.")
         setCellCustomStyle(workbook,cell,6,true,HorizontalAlignment.CENTER
             ,VerticalAlignment.CENTER,90)
         
+        cell =  headerRow.createCell(lastColumn+2)
+        cell.setCellValue("% INASIS.")
+        setCellCustomStyle(workbook,cell,6,true,HorizontalAlignment.CENTER
+            ,VerticalAlignment.CENTER,90)        
         
         CellRangeAddress region = new CellRangeAddress(3,4,0,18)
         RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
@@ -768,7 +773,7 @@ class AsignaturaController {
                 , periodoLectId:new Long(request.JSON.periLectivoId),turnoId:new Long(request.JSON.turnoId)]        
         def listInscripcion = Inscripcion.executeQuery(hql,parameters)
         Row rowAlumnos 
-        int orden=1
+        int orden=1 
         
         listInscripcion.each{
             log.info("Alumno: "+it.alumno.apellido)
@@ -781,7 +786,8 @@ class AsignaturaController {
             cell.setCellValue(it.condicion.name)
             setCellStyleCuerpo(workbook,cell)
             def filteredPie = it.periodosInscEval.findAll{pie->
-                pie.asignatura.id.compareTo(new Long(request.JSON.asigId))==0
+                (pie.asignatura.id.compareTo(new Long(request.JSON.asigId))==0
+                && pie.periodoEval.tipoPeriodoEval.id<3)
                 
             }
             filteredPie = filteredPie.sort{a,b->
@@ -789,6 +795,7 @@ class AsignaturaController {
             }
             int column=3
             BigDecimal notaFinal=BigDecimal.ZERO
+            int inasTotal=0
             filteredPie.each{filPie->
                 def filteredExams = filPie.examenes.sort {a,b->
                     if(a.tipoExamen.ordenCompendio==b.tipoExamen.ordenCompendio)
@@ -808,12 +815,13 @@ class AsignaturaController {
                         column++
                         cell = rowAlumnos.createCell(column)
                         setCellStyleCuerpo(workbook,cell)
-                        cell.setCellValue(exam.puntuacion)
+                        if(exam.puntuacion.compareTo(BigDecimal.ZERO)>0)
+                            cell.setCellValue(exam.puntuacion)
                         log.info("                      complementario: "+exam.puntuacion)
                         
                     }else{
-                        
-                        cell.setCellValue(exam.puntuacion)
+                        if(exam.puntuacion.compareTo(BigDecimal.ZERO)>0)
+                             cell.setCellValue(exam.puntuacion)
                         log.info("                      puntuacion: "+exam.puntuacion)
                     }
                     
@@ -828,6 +836,7 @@ class AsignaturaController {
                 column++
                 
                 notaFinal = notaFinal.add(filPie.notaFinal)
+                inasTotal += filPie.cantInasist
                 
             }
             
@@ -836,8 +845,31 @@ class AsignaturaController {
             cell = rowAlumnos.createCell(column)
             setCellStyleCuerpo(workbook,cell)
             cell.setCellValue(notaFinal)
+            
+            cell = rowAlumnos.createCell(column+1)
+            setCellStyleCuerpo(workbook,cell)
+            cell.setCellValue(inasTotal)
+            BigDecimal totalClasesB = new BigDecimal(totalClases)
+            BigDecimal inasTotalB = new BigDecimal(inasTotal)
+            BigDecimal cienxcienB = new BigDecimal(100)
+            BigDecimal porcentajeInas = BigDecimal.ZERO
+            log.info("Total clases: "+totalClasesB)
+            log.info("Total inasistencias: "+inasTotal)
+            
+            if(inasTotal>0){
+                log.info("+++++++++++++antes Porcentaje: "+porcentajeInas)
+                porcentajeInas=inasTotalB.multiply(cienxcienB).divide(totalClasesB,RoundingMode.HALF_UP)
+                log.info("+++++++++++++Porcentaje: "+porcentajeInas)
+            }
+            cell = rowAlumnos.createCell(column+2)
+            cell.setCellValue(porcentajeInas)
             log.info("Cantidad de periodos para la asignatura: "+filteredPie.size())
             orden++
+            
+            
+            //-----------mostrando periodos de previas-----
+            
+            
         } 
         //----------bordes de regiones-------
         /*for(int i = 1;i<=10;i++){
