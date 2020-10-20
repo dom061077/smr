@@ -8,14 +8,15 @@ class ConfiguracionExamenesDetalle {
     
     TipoExamen tipoExamen
     
-    PeriodoEvaluacion periodoEval
+    
     
     int cantidad
     
-    static belongsTo = [periodoEval:PeriodoEvaluacion]
+    static belongsTo = [configExamenes:ConfiguracionExamenes]
     
    
     
     static constraints = {
+        tipoPeriodoEval nullable:true
     }
 }

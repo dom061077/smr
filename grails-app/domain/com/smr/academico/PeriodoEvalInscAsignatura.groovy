@@ -14,7 +14,7 @@ class PeriodoEvalInscAsignatura {
     
     int cantInasist
 
-    boolean cerrado
+    boolean cerrado=false
     
 
     

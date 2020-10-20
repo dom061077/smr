@@ -22,8 +22,7 @@ class PeriodoEvaluacion {
 
             ,periodoLectivo:PeriodoLectivo]
     
-    static hasMany = [configExamenes:ConfiguracionExamenesDetalle
-        ,detalleAsigPerEval:AsignaturaPeriodoEvaluacion]
+    static hasMany = [detalleAsigPerEval:AsignaturaPeriodoEvaluacion]
     
     static mapping = {
         //tablePerHierarchy false
