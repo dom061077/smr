@@ -391,13 +391,12 @@ class AsignaturaController {
             +inscId+" asigId"+asigId) 
 
 
-        def hql = """
-                    SELECT pe.id,pe.inscripcion.alumno.id,pe.asignatura.id, pe.periodoEval.descripcion,SUM(e.puntuacion),count(e.id),SUM(e.puntuacion)/count(e.id) FROM PeriodoEvalInscAsignatura pe
-                    INNER JOIN pe.examenes e
-                    WHERE pe.inscripcion.id = :inscripcionId and pe.asignatura.id = :asignaturaId
-                    GROUP BY pe.periodoEval.descripcion
-
-                  """
+        def hql = """ FROM PeriodoEvalInscAsignatura ape
+                         WHERE ape.periodoEval.periodoLectivo.id = :periodoLectivoId
+                         AND ape.periodoEval.tipoPeriodoEval.id<3
+                         AND ape.asignatura.id = :asigId
+                         ORDER BY ape.periodoEval.ordenCompendio
+                     """
         def parameters=[inscripcionId:inscId,asignaturaId:asigId]          
         def list = PeriodoEvalInscAsignatura.executeQuery(hql,parameters)         
         return[list:list]
@@ -437,11 +436,12 @@ class AsignaturaController {
         log.info("Ingresndo alexportarCompendioXls. Parametros: "+request.JSON)
         //String[] columns = ["Name", "Email", "Date Of Birth", "Salary"]
         
-        String hql = """ FROM AsignaturaPeriodoEvaluacion ape
-                         WHERE ape.periodoEvaluacion.periodoLectivo.id = :periodoLectivoId\n\
-                         AND ape.periodoEvaluacion.tipoPeriodoEval.id<3
+        String hql = """ FROM PeriodoEvalInscAsignatura ape
+                         WHERE ape.periodoEval.periodoLectivo.id = :periodoLectivoId\n\
+                         AND ape.periodoEval.tipoPeriodoEval.id in (1,7)
+                         AND ape.inscripcion.anulada=false
                          AND ape.asignatura.id = :asigId\n\
-                         ORDER BY ape.periodoEvaluacion.ordenCompendio
+                         ORDER BY ape.periodoEval.tipoPeriodoEval.ordenCompendio,ape.periodoEval.id
                      """
         def parameters=[asigId:new Long(request.JSON.asigId)
                 , periodoLectivoId:new Long(request.JSON.periLectivoId)]
@@ -659,60 +659,115 @@ class AsignaturaController {
         
         int lastColumn=3
         int totalClases=0
-        listAsigPeriodoEval.each{
-            cell = periodoLectHeaderRow.createCell(lastColumn)
-            cell.setCellValue(it.periodoEvaluacion.descripcion)
-            cell.setCellStyle(headerCellStyle)
-            int examColumn = lastColumn
-            def configExams = it.periodoEvaluacion.configExamenes.sort{a,b->
-                    a.tipoExamen.ordenCompendio-b.tipoExamen.ordenCompendio
-            }
-            configExams.each{cnf->
+        
+        /*def configExams =  ConfiguracionExamenesDetalle.withCriteria(){
+                                configExamenes{
+                                    asignatura{
+                                        eq("id",new Long(14))
+                                    }
+                                }
+                                tipoExamen{
+                                    le("id",new Long(4))
+                                    order("ordenCompendio","asc")
+                                }
 
+                            }*/ 
+        listAsigPeriodoEval.each{
+            if(it.periodoEval.tipoPeriodoEval.id.compareTo(new Long(7))!=0){
+                cell = periodoLectHeaderRow.createCell(lastColumn)
+                cell.setCellValue(it.periodoEval.descripcion)
+                cell.setCellStyle(headerCellStyle)
                 
-                if(cnf.cantidad>1){
-                    for(int i=0;i<cnf.cantidad;i++){
+            }
+            int examColumn = lastColumn
+            int periLastColumn= lastColumn
+            def configExams = it.examenes.sort{a,b->
+                                        if(a.tipoExamen.ordenCompendio==b.tipoExamen.ordenCompendio)
+                                            a.id-b.id
+                                        else
+                                            a.tipoExamen.ordenCompendio - b.tipoExamen.ordenCompendio                
+                                }    
+            
+            log.info("******************ANTES DE LA CONFIGURACION DE EXAMENES*************")
+            configExams.each{cnf-> //TOMAR CONFIGEXAMENES DESDE listAsigPeriodoEval
+                log.info("Configuracion de examenes. "+cnf.tipoExamen.properties)
+                
+                //if(cnf.cantidad>1){
+                //    for(int i=0;i<cnf.cantidad;i++){
                         
-                        cell=headerRow.createCell(examColumn)
-                        cell.setCellStyle(cellStyle)
-                        cell.setCellValue(""+(i+1))
-                        examColumn++
-                    }
-                }else{
+                //        cell=headerRow.createCell(examColumn)
+                //        cell.setCellStyle(cellStyle)
+                //        cell.setCellValue(""+(i+1))
+                //        examColumn++
+                //    }
+                //}else{
                     if(cnf.tipoExamen.complementario){
+                        log.info("Es complementario!!!! examColumn: "+examColumn)
                         cell = headerRow.createCell(examColumn)//uso la fila debajo de trimestre para crear celdas
                         cell.setCellStyle(cellStyle)                    
-                        cell.setCellValue("PROM.")
+                        cell.setCellValue("PROM.Zyyyyyyy")
                         examColumn++
+                        periLastColumn++ 
                     }
+                    log.info("ExamColumn para cnf.tipoExamen.descripcion: "+examColumn)
                     cell = headerRow.createCell(examColumn)//uso la fila debajo de trimestre para crear celdas
                     cell.setCellStyle(cellStyle)                    
-                    cell.setCellValue(cnf.tipoExamen.descripcion)
+                    cell.setCellValue(cnf.tipoExamen.descripcion+'xxxxxx')
                     examColumn++
+                    periLastColumn++
 
-                }
+                //}
                 
             }
+            //lastColumn = examColumn
+            log.info("************************************")
+            //if(it.periodoEval.tipoPeriodoEval.id.compareTo(new Long(7))!=0){
+            //    periLastColumn = 1+/*complementario*/ 1+/*sumo uno de IANSIST.*/1/*sumo uno del promedio*/+configExams.size()
+               
+            //}else{
+            //    periLastColumn = configExams.size()
+            //}
+            
+            
             
 
+            int middlePeriLastColumn = (periLastColumn-1-lastColumn)/2
+            log.info("periLastColumn antes de INASIST: "+periLastColumn)
+            if(it.periodoEval.tipoPeriodoEval.id.compareTo(new Long(7))!=0){
+                
+                cell = headerRow.createCell(periLastColumn)
+                cell.setCellStyle(cellStyle)
+                cell.setCellValue("INASIST.")                
+                sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn,lastColumn+middlePeriLastColumn))
+                //periLastColumn = lastColumn + periLastColumn + 1
+                
+                
+            }else{
+                //sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn,lastColumn+periLastColumn))
+            }
             
-            int periLastColumn = 1+/*complementario*/ 1+/*sumo uno de IANSIST.*/1/*sumo uno del promedio*/+it.periodoEvaluacion.configExamenes.size()
             
-            cell = headerRow.createCell(lastColumn+periLastColumn)
-            cell.setCellStyle(cellStyle)
-            cell.setCellValue("INASIST.")
-            periLastColumn = periLastColumn/2
-            log.info("periLastColumn: "+periLastColumn)
-            sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn,lastColumn+periLastColumn))
-            periLastColumn = lastColumn + periLastColumn + 1
+            if(it.periodoEval.tipoPeriodoEval.id.compareTo(new Long(7))!=0){
+                //aqui tengo que restar columnas
+                
+                log.info("Creacion de region lastColumn: "+lastColumn+" middlePeriLastColumn: "+middlePeriLastColumn)
+                sheet.addMergedRegion(new CellRangeAddress(3,3,lastColumn+middlePeriLastColumn+1,lastColumn+configExams.size()))
+                cell = periodoLectHeaderRow.createCell(lastColumn+middlePeriLastColumn+1)
+                
+                cell.setCellValue("N Clases: ")
+                cell = periodoLectHeaderRow.createCell(lastColumn+configExams.size()+1)
+
+                cell.setCellValue(it.periodoEval.cantClases)
+                totalClases+=it.periodoEval.cantClases
+                lastColumn = lastColumn+configExams.size()+1/*sumo uno de INASIST.*/+1/*sumo prom.*/
+                
+            }else{
+                lastColumn = lastColumn+configExams.size()
+            }
             
-            lastColumn = lastColumn+it.periodoEvaluacion.configExamenes.size()+1+1/*sumo uno del promedio*/+1/*sumo uno de INASIST.*/+1/*complementario*/
             
-            sheet.addMergedRegion(new CellRangeAddress(3,3,periLastColumn,lastColumn-1))
-            cell = periodoLectHeaderRow.createCell(periLastColumn)
-            cell.setCellValue("N Clases: "+it.cantClases)
-            totalClases+=it.cantClases
-        }
+            
+        }//final iteracion de periodos********
         sheet.addMergedRegion(new CellRangeAddress(3,4,lastColumn,lastColumn))
         cell = periodoLectHeaderRow.createCell(lastColumn)
         cell.setCellValue("FINAL")
@@ -737,7 +792,7 @@ class AsignaturaController {
         cell =  headerRow.createCell(lastColumn+2)
         cell.setCellValue("% INASIS.")
         setCellCustomStyle(workbook,cell,6,true,HorizontalAlignment.CENTER
-            ,VerticalAlignment.CENTER,90)        
+            ,VerticalAlignment.CENTER,90)         
         
         CellRangeAddress region = new CellRangeAddress(3,4,0,18)
         RegionUtil.setBorderBottom(BorderStyle.THIN, region, sheet);
@@ -745,7 +800,7 @@ class AsignaturaController {
         RegionUtil.setBorderLeft(BorderStyle.THIN, region, sheet);
         RegionUtil.setBorderRight(BorderStyle.THIN, region, sheet);
         Row row = sheet.getRow(4) 
-        for(int i=0;i<lastColumn;i++){
+        /*for(int i=0;i<lastColumn;i++){
             cell=row.getCell(i) 
             cellStyle = cell.getCellStyle()
             cellStyle.setBorderTop(BorderStyle.THIN);
@@ -754,7 +809,7 @@ class AsignaturaController {
             cellStyle.setBorderRight(BorderStyle.THIN)
             cell.setCellStyle(cellStyle);
             
-        }
+        }*/
         
         //------------------iterando alumnos-----------------
         hql=''' SELECT  i FROM Inscripcion i
@@ -774,6 +829,8 @@ class AsignaturaController {
         def listInscripcion = Inscripcion.executeQuery(hql,parameters)
         Row rowAlumnos 
         int orden=1 
+        
+        log.info("cantidad de inscripciones: "+listInscripcion.size()+" con parametros: "+parameters)
         
         listInscripcion.each{
             log.info("Alumno: "+it.alumno.apellido)
@@ -833,7 +890,7 @@ class AsignaturaController {
                 cell = rowAlumnos.createCell(column)
                 setCellStyleCuerpo(workbook,cell)                
                 cell.setCellValue(filPie.cantInasist)
-                column++
+                column++ 
                 
                 notaFinal = notaFinal.add(filPie.notaFinal)
                 inasTotal += filPie.cantInasist
@@ -841,7 +898,7 @@ class AsignaturaController {
             }
             
             
-            notaFinal = notaFinal.divide(filteredPie.size(),RoundingMode.HALF_UP)
+            //notaFinal = notaFinal.divide(filteredPie.size(),RoundingMode.HALF_UP)
             cell = rowAlumnos.createCell(column)
             setCellStyleCuerpo(workbook,cell)
             cell.setCellValue(notaFinal)

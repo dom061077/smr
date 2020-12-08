@@ -9,41 +9,33 @@ import com.smr.academico.Examen
 import com.smr.academico.TipoExamen
 import com.smr.academico.PeriodoEvaluacion
 import com.smr.academico.PeriodoEvalInscAsignatura
+import com.smr.academico.ConfiguracionExamenes
 
 
 @Transactional
 class InscripcionService {
     
-    private saveExamenes(TurnoCursoDivision tcd,Inscription insc){
+    private saveExamenes(TurnoCursoDivision tcd,Inscripcion insc){
         List listConfig = ConfiguracionExamenes.list().findAll{p->
             (p.asignatura.curso.id.compareTo(tcd.curso.id)==0)
             
         }
-        listConfi.each{ conf->
+        listConfig.each{ conf->
             def periodoEval
             def pEvalInscAsig
             if(conf.cantidad>1){
                 for(int i=1;i<=conf.cantidad;i++){
                   periodoEval = new PeriodoEvaluacion(tipoPeriodoEval:conf.tipoPeriodoEval
-                    ,periodoLectivo:conf.periodoLectivo
-                    ,descripcion:""+i).save() 
+                    ,periodoLectivo:insc.periodoLectivo
+                    ,descripcion:""+i,ordenCompendio:i).save() 
                   pEvalInscAsig=new PeriodoEvalInscAsignatura(asignatura:conf.asignatura
                     ,inscripcion:insc,periodoEval:periodoEval,cantInasist:0)
-                }
-            }else{
-                periodoEval = new PeriodoEvaluacion(tipoPeriodoEval:conf.tipoPeriodoEval
-                    ,periodoLectivo:conf.periodoLectivo
-                    ,descripcion:conf.tipoPeriodoEval.descripcion).save()    
-                pEvalInscAsig=new PeriodoEvalInscAsignatura(asignatura:conf.asignatura
-                    ,inscripcion:insc,periodoEval:periodoEval,cantInasist:0)
-            }
-            conf.detalle.each{ det ->
-                    pe.configExamenes.each{ ced ->
+                    conf.detalle.each{ ced ->
                         TipoExamen tipoExamen=ced.tipoExamen
                         int cantExamenes = ced.cantidad
                         log.info("Tipo de examen a guardar: "+ced.tipoExamen)
                         for(int j=1; j<=cantExamenes; j++){
-                            pEvalInscAsigInstance.addToExamenes(
+                            pEvalInscAsig.addToExamenes(
                                     new Examen(descripcion:j+'°'+tipoExamen.descripcion
                                         ,tipoExamen:tipoExamen,periEvalInscAsig:pEvalInscAsig
                                         ,puntuacion:new BigDecimal("0.00")
@@ -52,8 +44,33 @@ class InscripcionService {
                         }
 
                     }                
-                
+                    pEvalInscAsig.save()                 
+                }
+            }else{
+                periodoEval = new PeriodoEvaluacion(tipoPeriodoEval:conf.tipoPeriodoEval
+                    ,periodoLectivo:insc.periodoLectivo
+                    ,descripcion:conf.tipoPeriodoEval.descripcion).save()    
+                pEvalInscAsig=new PeriodoEvalInscAsignatura(asignatura:conf.asignatura
+                    ,inscripcion:insc,periodoEval:periodoEval,cantInasist:0)
+                conf.detalle.each{ ced ->
+                    TipoExamen tipoExamen=ced.tipoExamen
+                    int cantExamenes = ced.cantidad
+                    log.info("Tipo de examen a guardar: "+ced.tipoExamen)
+                    for(int j=1; j<=cantExamenes; j++){
+                        pEvalInscAsig.addToExamenes(
+                                new Examen(descripcion:j+'°'+tipoExamen.descripcion
+                                    ,tipoExamen:tipoExamen,periEvalInscAsig:pEvalInscAsig
+                                    ,puntuacion:new BigDecimal("0.00")
+                                    ,inscripcion:insc)
+                            )
+                    }
+
+                }                
+                pEvalInscAsig.save()                 
             }
+            
+   
+            
         }
     }
     /*private saveExamenes(Inscripcion insc){

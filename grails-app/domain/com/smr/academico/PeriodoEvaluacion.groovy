@@ -16,6 +16,7 @@ class PeriodoEvaluacion {
 
     int ordenCompendio
     
+    int cantClases
 
     
     static belongsTo = [tipoPeriodoEval: TipoPeriodoEvaluacion
