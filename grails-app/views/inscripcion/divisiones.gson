@@ -5,5 +5,5 @@ model{
 }
 
 json{
-    divisiones list.collect{[id:it.division.id,nombre:it.division.nombre]}
+    divisiones list.collect{[id:it.id/*traigo el id de TurnoCursoDivision NO EL ID DE DIVISION*/,nombre:it.division.nombre]}
 }

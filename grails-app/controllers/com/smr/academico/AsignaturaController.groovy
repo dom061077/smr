@@ -253,9 +253,10 @@ class AsignaturaController {
                          inner join a.users u
                          inner join d.tcDivision tcd 
                          where u.id=:userId and i.periodoLectivo.state=true
-                         and a.id = :asigId and i.alumno.id = :alumnoId                       
+                         and a.id = :asigId and i.alumno.id = :alumnoId       \n\
+                         and e.tipoExamen in (1,2,3,4)
                          %filtroperiodo
-                         order by   pe.periodoEval.descripcion,e.tipoExamen.ordenCompendio,e.id"""
+                         order by  pe.periodoEval.ordenCompendio, e.tipoExamen.ordenCompendio,e.id"""
         def parameters = [userId:currentUser.id,asigId:asigId,alumnoId:alumnoId]
         if(perId && perId.compareTo(Long.parseLong("0"))>0){
             hql=hql.replaceAll("%filtroperiodo"," and pe.id = :perInscId")
@@ -815,8 +816,7 @@ class AsignaturaController {
         hql=''' SELECT  i FROM Inscripcion i
                     INNER JOIN i.detalle det
                     INNER JOIN det.tcDivision tcd
-                    WHERE tcd.curso.id = :cursoId AND tcd.division.id = :divisionId
-                    AND tcd.turno.id = :turnoId
+                    WHERE tcd.id = :tcdId
                     AND i.periodoLectivo.id = :periodoLectId
                     AND i.anulada=false            
                     ORDER BY i.alumno.apellido,i.alumno.nombre
@@ -824,8 +824,8 @@ class AsignaturaController {
                 //
                 //,
 
-         parameters = [cursoId:new Long(request.JSON.cursoId),divisionId:new Long(request.JSON.divisionId)
-                , periodoLectId:new Long(request.JSON.periLectivoId),turnoId:new Long(request.JSON.turnoId)]        
+         parameters = [tcdId:new Long(request.JSON.divisionId)
+                , periodoLectId:new Long(request.JSON.periLectivoId)]        
         def listInscripcion = Inscripcion.executeQuery(hql,parameters)
         Row rowAlumnos 
         int orden=1 
@@ -844,13 +844,14 @@ class AsignaturaController {
             setCellStyleCuerpo(workbook,cell)
             def filteredPie = it.periodosInscEval.findAll{pie->
                 (pie.asignatura.id.compareTo(new Long(request.JSON.asigId))==0
-                && pie.periodoEval.tipoPeriodoEval.id<3)
-                
+                && (pie.periodoEval.tipoPeriodoEval.id==1 || pie.periodoEval.tipoPeriodoEval.id==2
+                    || pie.periodoEval.tipoPeriodoEval.id==3 || pie.periodoEval.tipoPeriodoEval.id==7)
+                )
             }
             filteredPie = filteredPie.sort{a,b->
                 a.periodoEval.ordenCompendio-b.periodoEval.ordenCompendio
             }
-            int column=3
+            int column=4
             BigDecimal notaFinal=BigDecimal.ZERO
             int inasTotal=0
             filteredPie.each{filPie->
@@ -864,7 +865,7 @@ class AsignaturaController {
                 
                 filteredExams.each{exam->
                     cell = rowAlumnos.createCell(column)
-                    log.info("          TipoExamn: "+exam.tipoExamen.descripcion)
+                    log.info("          TipoExamn: "+exam.tipoExamen.descripcion+" columna: "+column)
                     setCellStyleCuerpo(workbook,cell)
                     if(exam.tipoExamen.complementario){
                         cell.setCellValue(filPie.totalPromedio)
@@ -872,12 +873,13 @@ class AsignaturaController {
                         column++
                         cell = rowAlumnos.createCell(column)
                         setCellStyleCuerpo(workbook,cell)
-                        if(exam.puntuacion.compareTo(BigDecimal.ZERO)>0)
+                        //if(exam.puntuacion.compareTo(BigDecimal.ZERO)>0)
                             cell.setCellValue(exam.puntuacion)
                         log.info("                      complementario: "+exam.puntuacion)
                         
+                        
                     }else{
-                        if(exam.puntuacion.compareTo(BigDecimal.ZERO)>0)
+                        //if(exam.puntuacion.compareTo(BigDecimal.ZERO)>0)
                              cell.setCellValue(exam.puntuacion)
                         log.info("                      puntuacion: "+exam.puntuacion)
                     }

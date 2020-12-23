@@ -29,7 +29,10 @@ class PeriodoEvalInscAsignatura {
                 cant++
             }
         }
-        return total.divide(cant, RoundingMode.HALF_UP)
+        if(cant>0)
+            return total.divide(cant, RoundingMode.HALF_UP)
+        else
+            return BigDecimal.ZERO
     }
     
     BigDecimal getNotaFinal(){
